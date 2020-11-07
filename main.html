@@ -1,0 +1,2785 @@
+<HTML>
+<HEAD>
+<meta http-equiv="content-type" content="text/html; charset=shift_jis">
+<TITLE>トントンレース３</TITLE>
+<script language="JavaScript">
+
+function outputLAYER(layName,html){
+    if(document.layers) {                      //NN用
+       with(document.layers[layName].document){
+         open()
+         write(html)
+         close()
+      }
+    }
+    if(document.all){                         //IE用
+      document.all(layName).innerHTML=html
+    }
+}
+function moveLAYER(layName,x,y){
+    if(document.layers)document.layers[layName].moveTo(x,y)   //NN用
+    if(document.all)document.all(layName).style.pixelLeft=x  //IE用
+    if(document.all)document.all(layName).style.pixelTop=y   //IE用
+}
+function sbwin_closed(winVar) {//子ウインドウが開いているか
+ 
+        var ua = navigator.userAgent
+        if( !!winVar )
+            if( ua.indexOf('MSIE 4')!=-1 && ua.indexOf('Win')!=-1 ) 
+                 return winVar.closed
+            else return typeof winVar.document  != 'object'
+        else return true
+ 
+}
+
+function shuffle(a,n){//シャッフル
+	for(i=n-1;i>0;i--){j=Math.floor(n*Math.random());d=a[i];a[i]=a[j];a[j]=d;}
+}
+
+var img1,img2,img3,img4,img5,img6;
+img1=new Image(15,150);img1.src="paddock.png";
+img2=new Image(15,150);img2.src="logo_farm.png";
+img3=new Image(400,39);img3.src="pado_bg.gif";
+img4=new Image(400,39);img4.src="owner_bg.gif";
+img5=new Image(50,50);img5.src="kaisetu.gif";
+img6=new Image(50,50);img6.src="farm_kaisetu.gif";
+
+function loadfn(){
+		output_status();//gameini();
+}
+function savedata(saveflag){
+if(gameflag){
+	var henji=true;
+	//クッキー関連の処理
+	if(saveflag) henji=confirm("セーブしますか？\nセーブするとゲームは自動的に終了します。");
+	if(henji || !saveflag){
+		var myDate=new Date();
+		var day=60;
+		save_pts=mymoney+","+startmoney+","+nowyear+","+nowrace+","+koten+","+sousyoukin+","+farmevent;
+		save_bet=bet_form;
+		save_comm=cmnt;
+		save_hist=history;
+		
+		save_name="";
+		save_pow="";
+		for(i=100;i<112;i++){
+			save_name+=butaname[i]+",";//100-111
+			save_pow+=butapow[i]+",";//100-111
+		}
+		save_opig=ownerpig;
+		save_opow=ownerpow;
+		save_otype=ownertype;
+		save_owin=ownerwin;
+		save_oyou=youiku;
+		save_pflag=parentflag;
+		save_eflag=eventflag;
+		save_ent=entrynum;
+		save_cond=condition;
+		myDate.setTime(myDate.getTime()+(day*24*60*60*1000));
+		
+		document.cookie="ton3pts="+save_pts+";expires="+myDate.toGMTString();
+		document.cookie="ton3bet="+save_bet+";expires="+myDate.toGMTString();
+		document.cookie="ton3com="+save_comm+";expires="+myDate.toGMTString();
+		document.cookie="ton3his="+save_hist+";expires="+myDate.toGMTString();
+		document.cookie="ton3nam="+save_name+";expires="+myDate.toGMTString();
+		document.cookie="ton3pow="+save_pow+";expires="+myDate.toGMTString();
+		document.cookie="ton3opi="+save_opig+";expires="+myDate.toGMTString();
+		document.cookie="ton3opo="+save_opow+";expires="+myDate.toGMTString();
+		document.cookie="ton3oty="+save_otype+";expires="+myDate.toGMTString();
+		document.cookie="ton3owi="+save_owin+";expires="+myDate.toGMTString();
+		document.cookie="ton3oyo="+save_oyou+";expires="+myDate.toGMTString();
+		document.cookie="ton3pfl="+save_pflag+";expires="+myDate.toGMTString();
+		document.cookie="ton3efl="+save_eflag+";expires="+myDate.toGMTString();
+		document.cookie="ton3ent="+save_ent+";expires="+myDate.toGMTString();
+		document.cookie="ton3con="+save_cond+";expires="+myDate.toGMTString();
+		alert("セーブが終了しました。");
+		
+		if(saveflag){
+			//parent.location.href="http://hb8.seikyou.ne.jp/home/shirafuji/index.html";
+		}
+	}
+}//if(gameflag)
+}
+
+function loaddata(){
+if(gameflag){
+	if(confirm("ロードしますか？")){
+		var mycookie=document.cookie;
+		if(mycookie.indexOf("ton3pts=")!=-1){
+			n=mycookie.indexOf("ton3pts=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			mymoney=eval(buf[0]);startmoney=eval(buf[1]);nowyear=eval(buf[2]);
+			nowrace=eval(buf[3]);koten=eval(buf[4]);sousyoukin=eval(buf[5]);
+			farmevent=eval(buf[6]);
+			
+			n=mycookie.indexOf("ton3bet=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<177;i++) bet_form[i]=eval(buf[i]);
+			
+			n=mycookie.indexOf("ton3com=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<12;i++) cmnt[i]=buf[i];
+			
+			n=mycookie.indexOf("ton3his=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<224;i++) history[i]=buf[i];
+			
+			n=mycookie.indexOf("ton3nam=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=100;i<112;i++){
+				butaname[i]=buf[i-100];//100-111
+			}
+			
+			n=mycookie.indexOf("ton3pow=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=100;i<112;i++){
+				butapow[i]=buf[i-100];//100-111
+			}
+			
+			n=mycookie.indexOf("ton3opi=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<12;i++) ownerpig[i]=buf[i];
+			
+			n=mycookie.indexOf("ton3opo=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<12;i++) ownerpow[i]=buf[i];
+			
+			n=mycookie.indexOf("ton3oty=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<12;i++) ownertype[i]=eval(buf[i]);
+			
+			n=mycookie.indexOf("ton3owi=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<12;i++) ownerwin[i]=buf[i];
+			
+			n=mycookie.indexOf("ton3oyo=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<12;i++) youiku[i]=eval(buf[i]);
+			
+			n=mycookie.indexOf("ton3pfl=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<48;i++) parentflag[i]=eval(buf[i]);
+			
+			n=mycookie.indexOf("ton3efl=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<64;i++) eventflag[i]=eval(buf[i]);
+			
+			n=mycookie.indexOf("ton3ent=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<12;i++) entrynum[i]=eval(buf[i]);
+			
+			n=mycookie.indexOf("ton3con=")+8;
+			m=mycookie.indexOf(";",n);
+			if(m==-1) m=mycookie.length;
+			buf=mycookie.substring(n,m);
+			buf=buf.split(",");
+			for(i=0;i<12;i++) condition[i]=eval(buf[i]);
+			
+			//期待値計算
+			countkitai();
+			
+			alert("ロードが完了しました。");
+			gomenu("race");
+			trackmenu(0,false);
+			output_status();
+		}
+		else alert("セーブデータがありません。\nはじめからになります。");
+	}
+}//if(gameflag)
+}
+
+var wakucolor=new Array("ffffff","989898","FF6868","7878FF","FFFF68","68FF68");//枠番背景
+var tdc="<td bgcolor=cccccc align=center>";//よく使うHTMLを変数に格納
+var tdr="<td bgcolor=cccccc align=right>";
+var thc="<th bgcolor=cccccc>";
+
+var r_name=new Array(52);//レース名
+var r_kyori=new Array(52);//距離
+var r_grade=new Array(52);//グレード 7:G3 6:G2 5～1:G1 0:W1
+var r_course=new Array(52);//競豚場(0～9) 10～19は障害コース
+
+var raceflag=false;//falseならレース中
+var gameflag=false;//trueならタブクリック可
+var loadflag=false;
+var othernews="";//別ウインドウ用
+var mymoney=500;//所持金 500スタート
+var startmoney=500;//ゲーム開始時所持金
+var nowyear=1;//何年目
+var nowrace=0;//レース番号(0～51)
+var kyori=0;//レース距離
+var grade=3;//Grade(0～4)
+var ashi=new Array("","逃","先","差","追");
+var tenki=new Array("良","稍重","重","不良","");
+var course_list=new Array("新宿","成田","奈良","なにわ","名古屋","地方","サハラ","北京","グアム","パリ");
+var course_layout=new Array(0,0,2,2,0,4,0,0,3,3,0,4,2,2,1,1,2,2,0,0,1,1,0,4,1,1,3,3,1,1,2,2,3,3,2,2,1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,0,0,0,0,0,4);//距離別馬場 芝、ダ、石、泥、坂
+var baba_list=new Array("芝・石","芝・泥","ダ・石","芝・ダ","ダ・泥","石・泥","ダ","石","泥","芝");
+var award_list=new Array(6000,2500,1800,1500,1300,900,600,400);//1着賞金
+var grade_color=new Array("gold","lightblue","lightblue","lightblue","lightblue","lightblue","lightpink","lightgreen");
+var power_rank=new Array("F","F+","E","E+","D","D+","C","C+","B","B","B+","B+","A","A","A+","A+","S","S","S+","SS");
+
+var bet_form=new Array(177);
+for(i=0;i<177;i++) bet_form[i]=0;//ベット数（単12　複12　枠21　豚66　ワ66）
+
+var kitai=new Array(12);
+var kitaitotal=0;
+var mark=new Array(12);//予想印
+var cmnt=new Array(12);//ランダムコメント
+var tokitama="";//コメント
+
+//日程表用
+var todaykoten=new Array(52);
+var todaywin=new Array(52);
+var todayqui=new Array(52);
+
+r_name[0]="成田銀杯";r_kyori[0]=20;r_grade[0]=7;r_course[0]=1;
+r_name[1]="日系新春杯";r_kyori[1]=24;r_grade[1]=6;r_course[1]=2;
+r_name[2]="アメリカピッグクラブカップ";r_kyori[2]=22;r_grade[2]=6;r_course[2]=1;
+r_name[3]="新宿新聞杯";r_kyori[3]=16;r_grade[3]=7;r_course[3]=0;
+r_name[4]="合同通信杯";r_kyori[4]=12;r_grade[4]=7;r_course[4]=0;
+r_name[5]="せせらぎ賞";r_kyori[5]=18;r_grade[5]=7;r_course[5]=2;
+r_name[6]="ウェブラリーステークス";r_kyori[6]=16;r_grade[6]=5;r_course[6]=0;
+r_name[7]="成田記念";r_kyori[7]=18;r_grade[7]=6;r_course[7]=1;
+r_name[8]="中協記念";r_kyori[8]=20;r_grade[8]=7;r_course[8]=4;
+r_name[9]="浪花スプリングジャンプ";r_kyori[9]=28;r_grade[9]=6;r_course[9]=13;
+r_name[10]="神戸大賞典";r_kyori[10]=30;r_grade[10]=6;r_course[10]=3;
+r_name[11]="高松塚記念";r_kyori[11]=12;r_grade[11]=5;r_course[11]=4;
+r_name[12]="ピラミッドトロフィー";r_kyori[12]=20;r_grade[12]=0;r_course[12]=6;
+r_name[13]="東大阪杯";r_kyori[13]=20;r_grade[13]=6;r_course[13]=3;
+r_name[14]="五月賞";r_kyori[14]=20;r_grade[14]=5;r_course[14]=1;
+r_name[15]="報告ジャンプステークス";r_kyori[15]=24;r_grade[15]=7;r_course[15]=15;
+r_name[16]="春王賞";r_kyori[16]=32;r_grade[16]=4;r_course[16]=2;
+r_name[17]="THKマイルカップ";r_kyori[17]=16;r_grade[17]=5;r_course[17]=0;
+r_name[18]="慶応杯スプリングカップ";r_kyori[18]=14;r_grade[18]=6;r_course[18]=0;
+r_name[19]="ラジオ丹波賞";r_kyori[19]=18;r_grade[19]=7;r_course[19]=0;
+r_name[20]="トントンダービー";r_kyori[20]=24;r_grade[20]=3;r_course[20]=0;
+r_name[21]="保田記念";r_kyori[21]=16;r_grade[21]=5;r_course[21]=0;
+r_name[22]="新宿ハイジャンプ";r_kyori[22]=30;r_grade[22]=6;r_course[22]=10;
+r_name[23]="子犬座ステークス";r_kyori[23]=14;r_grade[23]=7;r_course[23]=3;
+r_name[24]="宝塚南口記念";r_kyori[24]=22;r_grade[24]=4;r_course[24]=3;
+r_name[25]="長城杯";r_kyori[25]=30;r_grade[25]=0;r_course[25]=17;
+r_name[26]="凍解ステークス";r_kyori[26]=22;r_grade[26]=6;r_course[26]=4;
+r_name[27]="タナボタ賞";r_kyori[27]=20;r_grade[27]=7;r_course[27]=0;
+r_name[28]="博多南サマージャンプ";r_kyori[28]=22;r_grade[28]=7;r_course[28]=15;
+r_name[29]="アルゼンチンタンゴ杯";r_kyori[29]=24;r_grade[29]=6;r_course[29]=0;
+r_name[30]="エルフステークス";r_kyori[30]=16;r_grade[30]=7;r_course[30]=5;
+r_name[31]="BCG賞";r_kyori[31]=12;r_grade[31]=6;r_course[31]=4;
+r_name[32]="小樽記念";r_kyori[32]=20;r_grade[32]=6;r_course[32]=5;
+r_name[33]="地方ジャンプステークス";r_kyori[33]=20;r_grade[33]=7;r_course[33]=15;
+r_name[34]="成田グランドジャンプ";r_kyori[34]=30;r_grade[34]=5;r_course[34]=11;
+r_name[35]="セントラルステークス";r_kyori[35]=12;r_grade[35]=7;r_course[35]=3;
+r_name[36]="セットライト記念";r_kyori[36]=22;r_grade[36]=6;r_course[36]=1;
+r_name[37]="スプリットステークス";r_kyori[37]=12;r_grade[37]=5;r_course[37]=1;
+r_name[38]="トロピカルカップ";r_kyori[38]=16;r_grade[38]=0;r_course[38]=8;
+r_name[39]="毎週王冠";r_kyori[39]=18;r_grade[39]=6;r_course[39]=0;
+r_name[40]="新宿オータムジャンプ";r_kyori[40]=28;r_grade[40]=7;r_course[40]=10;
+r_name[41]="菊科賞";r_kyori[41]=30;r_grade[41]=4;r_course[41]=2;
+r_name[42]="秋王賞";r_kyori[42]=20;r_grade[42]=4;r_course[42]=0;
+r_name[43]="ファンシーステークス";r_kyori[43]=14;r_grade[43]=7;r_course[43]=2;
+r_name[44]="奈良ハイジャンプ";r_kyori[44]=32;r_grade[44]=6;r_course[44]=12;
+r_name[45]="タイルチャンピオンシップ";r_kyori[45]=16;r_grade[45]=5;r_course[45]=2;
+r_name[46]="ニホンカップ";r_kyori[46]=24;r_grade[46]=1;r_course[46]=0;
+r_name[47]="ステイステークス";r_kyori[47]=32;r_grade[47]=6;r_course[47]=1;
+r_name[48]="ナゴヤ新聞杯";r_kyori[48]=12;r_grade[48]=7;r_course[48]=4;
+r_name[49]="成田大障害";r_kyori[49]=32;r_grade[49]=5;r_course[49]=11;
+r_name[50]="有豚記念";r_kyori[50]=24;r_grade[50]=2;r_course[50]=1;
+r_name[51]="エッフェル賞";r_kyori[51]=24;r_grade[51]=0;r_course[51]=9;
+
+var history=new Array(224);//前走（持ち豚含む）112*2
+var butaname=new Array(112);
+var butapow=new Array(112);//パラメータ(7種)+脚(1:逃 2:先 3:差 4:追)
+
+//左から スピード スタミナ スタート 気性 競り合い ジャンプ 悪路適正
+butaname[0]="アオジルジューサー";butapow[0]="978830189970883";
+butaname[1]="ダブルズームレンズ";butapow[1]="996950009876571";
+butaname[2]="ダブルチューナー";butapow[2]="899622199759734";
+butaname[3]="ブレードボディ";butapow[3]="955313259664674";
+butaname[4]="アブ";butapow[4]="989545309583901";
+butaname[5]="ウルトラウォッシュ";butapow[5]="927826359456992";
+butaname[6]="カントリーテープ";butapow[6]="909337389390542";
+butaname[7]="クレージーカッター";butapow[7]="987033129269814";
+butaname[8]="トーキングウェイト";butapow[8]="916450299157571";
+butaname[9]="ハンバーグオイル";butapow[9]="948141319076531";
+butaname[10]="マイソング";butapow[10]="994929058958743";
+butaname[11]="プラクティスビデオ";butapow[11]="879908458890994";
+butaname[12]="クロレラゲキジョウ";butapow[12]="955516188754524";
+butaname[13]="ヤキニクストーン";butapow[13]="965821048649553";
+butaname[14]="マッチョボンド";butapow[14]="908405288583564";
+butaname[15]="ベッピンスポンジ";butapow[15]="977437388458732";
+butaname[16]="チョコバナナサンド";butapow[16]="937812358363984";
+butaname[17]="ラリーコーリー";butapow[17]="849545138289551";
+butaname[18]="フライパンバーナー";butapow[18]="896441318169891";
+butaname[19]="ワンモアプレゼント";butapow[19]="967126248075512";
+butaname[20]="イージーフィット";butapow[20]="819912127989663";
+butaname[21]="カンゲンゴブ";butapow[21]="947149177845802";
+butaname[22]="スーパーシーラー";butapow[22]="917708417788984";
+butaname[23]="マスクドマジシャン";butapow[23]="927029177657563";
+butaname[24]="ロングドライバー";butapow[24]="889033047563671";
+butaname[25]="リーカルクック";butapow[25]="936844287482541";
+butaname[26]="フレッシュパスタ";butapow[26]="879721137368812";
+butaname[27]="エアフレッシュ";butapow[27]="769716397254744";
+butaname[28]="タヒチパール";butapow[28]="855940117175721";
+butaname[29]="ウサミウンドウ";butapow[29]="829407477049874";
+butaname[30]="オーストリッチ";butapow[30]="888536366955532";
+butaname[31]="フルツエクスプレス";butapow[31]="835612056888973";
+butaname[32]="ボーイズサイズ";butapow[32]="789232196768591";
+butaname[33]="ストレッチボード";butapow[33]="729625296674802";
+butaname[34]="ショーケン";butapow[34]="856549246556501";
+butaname[35]="ボールバリカン";butapow[35]="819820116482823";
+butaname[36]="キンギョマシーン";butapow[36]="866432166362663";
+butaname[37]="ハンディミシン";butapow[37]="749440326242603";
+butaname[38]="スキャナセット";butapow[38]="808804066174894";
+butaname[39]="マルチプレート";butapow[39]="835944276048721";
+butaname[40]="モリブデンデザイン";butapow[40]="799815445981974";
+butaname[41]="ダブルキャンペーン";butapow[41]="866148035855581";
+butaname[42]="ビッチマン";butapow[42]="689136205753794";
+butaname[43]="トッキョバルブ";butapow[43]="775403105687684";
+butaname[44]="ミスターデーブマン";butapow[44]="826931395567601";
+butaname[45]="オオムギテレビ";butapow[45]="758611235462743";
+butaname[46]="シェイメンテナンス";butapow[46]="737220365381653";
+butaname[47]="クインズクイーン";butapow[47]="848407145245873";
+butaname[48]="リピータクリーナ";butapow[48]="639325415173964";
+butaname[49]="ポータブルゴリラ";butapow[49]="807739065053822";
+butaname[50]="ポータブルベッド";butapow[50]="748215274987523";
+butaname[51]="トッテトッテベンリ";butapow[51]="727424104848902";
+butaname[52]="マジカルルアー";butapow[52]="778903324767753";
+butaname[53]="セルフサッカー";butapow[53]="785135474680681";
+butaname[54]="ハンドルカッター";butapow[54]="736528204542792";
+butaname[55]="ムービングベルト";butapow[55]="758319484461714";
+butaname[56]="フィッドナウ";butapow[56]="707543034373832";
+butaname[57]="アンゼンノズル";butapow[57]="648711404286864";
+butaname[58]="カッコーサウンド";butapow[58]="688748164144611";
+butaname[59]="キンカブレスレット";butapow[59]="599204094052963";
+butaname[60]="ローリーエッグ";butapow[60]="766131423980652";
+butaname[61]="ムチャナイフ";butapow[61]="578139333847751";
+butaname[62]="デジタルプリント";butapow[62]="715619073766912";
+butaname[63]="バイブチェア";butapow[63]="668524143652583";
+butaname[64]="プリティバイシクル";butapow[64]="706828233586613";
+butaname[65]="ファーストブレッド";butapow[65]="645214263472784";
+butaname[66]="プレスレモン";butapow[66]="678943363341952";
+butaname[67]="スカートバンカー";butapow[67]="715706213279833";
+butaname[68]="パワフルドライ";butapow[68]="619135023166861";
+butaname[69]="スマートモプ";butapow[69]="587910443061934";
+butaname[70]="タマネギカッター";butapow[70]="696227372944692";
+butaname[71]="ベスドトレッサー";butapow[71]="628347092851621";
+butaname[72]="セラミックステーキ";butapow[72]="536618152785954";
+butaname[73]="トラファン";butapow[73]="657614452647713";
+butaname[74]="ロングライフパット";butapow[74]="499034402579761";
+butaname[75]="ステップウォーク";butapow[75]="667202422472843";
+butaname[76]="ピッグパパ";butapow[76]="614942502341502";
+butaname[77]="ピッグママ";butapow[77]="558623502285642";
+butaname[78]="ヤドカリダッシュ";butapow[78]="606031492151692";
+butaname[79]="ニューバリバリ";butapow[79]="677338262065942";
+butaname[80]="マダムローヤル";butapow[80]="585218221978621";
+butaname[81]="ムッシュローヤル";butapow[81]="628006071846923";
+butaname[82]="ラクパク";butapow[82]="506209461771644";
+butaname[83]="モデルエイ";butapow[83]="546617481660763";
+butaname[84]="ホットケパン";butapow[84]="655723331584852";
+butaname[85]="ニセコレ";butapow[85]="517347081443781";
+butaname[86]="フットシート";butapow[86]="537601431378944";
+butaname[87]="ヨモーフートン";butapow[87]="575513211271513";
+butaname[88]="ユカグリーン";butapow[88]="596727251165702";
+butaname[89]="ネコダノミ";butapow[89]="608030371050921";
+butaname[90]="バードクロック";butapow[90]="635838020946771";
+butaname[91]="ダイリブチョー";butapow[91]="548202350860844";
+butaname[92]="タカタスタジオ";butapow[92]="566317460784633";
+butaname[93]="ナナキロカロリー";butapow[93]="526709080664704";
+butaname[94]="ニシダムービー";butapow[94]="567542150543932";
+butaname[95]="ミニミニクリーナー";butapow[95]="495334340477771";
+butaname[96]="グロスユニット";butapow[96]="517922010370853";
+butaname[97]="ゴリラアルバム";butapow[97]="506046490250592";
+butaname[98]="フリカケミキサー";butapow[98]="525416220159912";
+butaname[99]="ヌイグルミブクロ";butapow[99]="556305430077634";
+
+//豚主用
+var ownerpig=new Array(12);
+var ownerpow=new Array(12);
+var ownertype=new Array(12);
+var ownerwin=new Array(12);
+var youiku=new Array(12);
+var tokkunnum=new Array(12);
+
+for(i=0;i<12;i++){
+	ownerpig[i]="";
+	ownerpow[i]="0000000000000000000000000";//能力(15桁)体(3)や(2)老(3)遺(2)性(0m1f)装(2)
+	ownertype[i]=0;//0未所有 1父 2母 3現役（男） 4（女）
+	ownerwin[i]="0000000000000";//獲得賞金(6)+戦数(2)+勝数(2)+G1勝数(2)+残休養数(1)
+	youiku[i]=0;//養育費
+	tokkunnum[i]=0;//１週間の特訓回数
+}
+var sousyoukin=0;//獲得総賞金
+var farmevent=0;//イベントフラグ（0なら何も起こらない）
+var seibetu=new Array("男","女");
+
+var parentname=new Array(48);var parentpow=new Array(48);var parentflag=new Array(48);
+for(i=0;i<48;i++) parentflag[i]=true;//親豚購入フラグ
+//父
+parentname[0]="イージージム";parentpow[0]="5056194300747821009910040000";
+parentname[1]="パワーペースト";parentpow[1]="5375332506585631009910040000";
+parentname[2]="ファイブキング";parentpow[2]="5666081312819211009910040000";
+parentname[3]="ミテミテ";parentpow[3]="5981384718477141009910040000";
+parentname[4]="ポリマワタ";parentpow[4]="6250233624849721009910040000";
+parentname[5]="ハミングクッキング";parentpow[5]="6558031730636611009910040000";
+parentname[6]="エアベット";parentpow[6]="6997430636685541009910040000";
+parentname[7]="プロロック";parentpow[7]="7082373742578331009910040000";
+parentname[8]="リッキー";parentpow[8]="7491132048857911009910040000";
+parentname[9]="プロロングレース";parentpow[9]="7887180354456131009910040000";
+parentname[10]="クイッククック";parentpow[10]="7955053360738721009910040000";
+parentname[11]="ケルヒャー";parentpow[11]="8492322866537021009910040000";
+parentname[12]="エンドレスダイヤ";parentpow[12]="8679481072799421009910040000";
+parentname[13]="アーマーピアス";parentpow[13]="8872144078527521009910040000";
+parentname[14]="ブイダマ";parentpow[14]="9362282484695011009910040000";
+parentname[15]="ロールアンドプレス";parentpow[15]="9770221990406931009910040000";
+//母
+parentname[16]="エムイーエス";parentpow[16]="5274124600678441009910040100";
+parentname[17]="ファッタチエ";parentpow[17]="5454361106838031009910040100";
+parentname[18]="ファットブラスター";parentpow[18]="5596424412486021009910040100";
+parentname[19]="レンジダイレクト";parentpow[19]="5883061618708811009910040100";
+parentname[20]="セントータル";parentpow[20]="5878200224866541009910040100";
+parentname[21]="サットリーナ";parentpow[21]="6173463530569331009910040100";
+parentname[22]="フルーツダイエット";parentpow[22]="6663153036447421009910040100";
+parentname[23]="レッスンオブザイヤ";parentpow[23]="7288410742725411009910040100";
+parentname[24]="ハレバレショップ";parentpow[24]="7557273248598611009910040100";
+parentname[25]="デカパワー";parentpow[25]="7793021454785741009910040100";
+parentname[26]="メイトチョッパー";parentpow[26]="8161472260627731009910040100";
+parentname[27]="フリッツジェンツ";parentpow[27]="8586243866516841009910040100";
+parentname[28]="ヤサイファミリー";parentpow[28]="8990310572649621009910040100";
+parentname[29]="フロアーライト";parentpow[29]="9251094178805111009910040100";
+parentname[30]="ザバディザバディ";parentpow[30]="9469452684418931009910040100";
+parentname[31]="ローテート";parentpow[31]="9567171890666421009910040100";
+//現役
+parentname[32]="ナットメット";parentpow[32]="5176354800776221009905040100";
+parentname[33]="ブルーアイス";parentpow[33]="5559402905558541009905040000";
+parentname[34]="ミセスシンプル";parentpow[34]="5765104510758141009905040100";
+parentname[35]="クールスモーク";parentpow[35]="6080292115497221009905040000";
+parentname[36]="プラチナエッジ";parentpow[36]="6495070820605931009905040100";
+parentname[37]="モハピ";parentpow[37]="6777213925879121009905040000";
+parentname[38]="ハンドメイドセット";parentpow[38]="7152261230766331009905040000";
+parentname[39]="リストア";parentpow[39]="7389044235439511009905040100";
+parentname[40]="ブラックフェイス";parentpow[40]="7660112740618221009905040000";
+parentname[41]="オズボン";parentpow[41]="8071440945715341009905040100";
+parentname[42]="シックスパック";parentpow[42]="8294343450507321009905040000";
+parentname[43]="スペンガリト";parentpow[43]="8368013155469041009905040100";
+parentname[44]="テクノフトーン";parentpow[44]="8785391560825211009905040100";
+parentname[45]="ブライトアンバー";parentpow[45]="9053300165426731009905040000";
+parentname[46]="マリンゴ";parentpow[46]="9184162370655821009905040100";
+parentname[47]="マスマシック";parentpow[47]="9664250475547611009905040000";
+
+
+var farmmenu=new Array(64);
+var farmnaiyo=new Array(64);
+var farmpower=new Array(64);
+var farmmoney=new Array(64);
+var eventflag=new Array(64);
+for(i=8;i<64;i++) eventflag[i]=false;
+for(i=0;i<8;i++) eventflag[i]=true;
+eventflag[11]=true;eventflag[12]=true;eventflag[13]=true;eventflag[14]=true;
+eventflag[15]=true;eventflag[16]=true;eventflag[31]=true;eventflag[32]=true;
+eventflag[33]=true;eventflag[34]=true;eventflag[35]=true;eventflag[36]=true;
+eventflag[37]=true;eventflag[38]=true;eventflag[46]=true;eventflag[47]=true;
+eventflag[55]=true;eventflag[60]=true;eventflag[61]=true;
+
+farmmenu[0]="父豚購入";farmnaiyo[0]="父豚を購入し、牧場へ入れます。";
+farmpower[0]="";farmmoney[0]=0;
+farmmenu[1]="母豚購入";farmnaiyo[1]="母豚を購入し、牧場へ入れます。";
+farmpower[1]="";farmmoney[1]=0;
+farmmenu[2]="現役豚購入";farmnaiyo[2]="すぐにレースに出れる現役豚を購入し、牧場へ入れます。";
+farmpower[2]="";farmmoney[2]=0;
+farmmenu[3]="種付け";farmnaiyo[3]="父豚と母豚を選択し、子供を生ませます。（無料）";
+farmpower[3]="";farmmoney[3]=0;
+farmmenu[4]="引退";farmnaiyo[4]="上で選択している現役豚を引退させます。現役豚に限界を感じたら、引退させてください。引退した豚は親豚になります。（無料）";
+farmpower[4]="";farmmoney[4]=0;
+farmmenu[5]="売却";farmnaiyo[5]="上で選択している親豚・現役豚を売却します。牧場に空きがなくなったときなどに使ってください。";
+farmpower[5]="";farmmoney[5]=0;
+
+//速持瞬気競跳荒体や
+farmmenu[6]="単走・ダート";farmnaiyo[6]="砂地の上を走る。";
+farmpower[6]="持";farmmoney[6]=30;
+farmmenu[7]="単走・芝";farmnaiyo[7]="芝生の上を走る。";
+farmpower[7]="速";farmmoney[7]=30;
+farmmenu[8]="単走・石畳";farmnaiyo[8]="石畳の上を走る。";
+farmpower[8]="速持";farmmoney[8]=50;
+farmmenu[9]="単走・泥";farmnaiyo[9]="泥の上を走る。";
+farmpower[9]="速荒";farmmoney[9]=50;
+farmmenu[10]="単走・ウッド";farmnaiyo[10]="木屑の上を走る。疲労小。";
+farmpower[10]="<b>持</b>";farmmoney[10]=70;
+farmmenu[11]="単走・坂路";farmnaiyo[11]="坂道を走る。";
+farmpower[11]="持瞬";farmmoney[11]=70;
+farmmenu[12]="併走・芝";farmnaiyo[12]="他の豚と芝を走る。";
+farmpower[12]="速競";farmmoney[12]=70;
+farmmenu[13]="併走・ダート";farmnaiyo[13]="他の豚と砂地を走る。";
+farmpower[13]="持競";farmmoney[13]=70;
+farmmenu[14]="併走・坂路";farmnaiyo[14]="他の豚と坂道を走る。";
+farmpower[14]="<b>持</b>瞬競";farmmoney[14]=100;
+farmmenu[15]="ゲート";farmnaiyo[15]="スタートの練習。";
+farmpower[15]="瞬";farmmoney[15]=50;
+farmmenu[16]="精神集中";farmnaiyo[16]="イメージトレーニングをする。";
+farmpower[16]="気や";farmmoney[16]=50;
+farmmenu[17]="ビデオ学習";farmnaiyo[17]="自分の走りを研究する。";
+farmpower[17]="気競や";farmmoney[17]=130;
+farmmenu[18]="催眠";farmnaiyo[18]="自己暗示にかける。失敗あり。";
+farmpower[18]="速持競<b>や</b>";farmmoney[18]=70;
+farmmenu[19]="青竹踏み";farmnaiyo[19]="心身ともにリフレッシュ。体力回復。";
+farmpower[19]="気体や";farmmoney[19]=100;
+farmmenu[20]="プール";farmnaiyo[20]="泳ぐ。";
+farmpower[20]="持<b>荒</b>";farmmoney[20]=130;
+farmmenu[21]="タイヤ引き";farmnaiyo[21]="タイヤをつけて走る。";
+farmpower[21]="<b>持</b>";farmmoney[21]=130;
+farmmenu[22]="パン食い競争";farmnaiyo[22]="他の豚とパンの食べあい。";
+farmpower[22]="<b>競</b>跳体";farmmoney[22]=160;
+farmmenu[23]="ハードル走";farmnaiyo[23]="障害越え対策。";
+farmpower[23]="速<b>跳</b>";farmmoney[23]=130;
+farmmenu[24]="トランポリン";farmnaiyo[24]="ジャンプ力を強化する。疲労大。";
+farmpower[24]="<b>瞬跳</b>";farmmoney[24]=200;
+farmmenu[25]="どろんこクイズ";farmnaiyo[25]="グアムでやってるやつ。疲労大。";
+farmpower[25]="速瞬<b>荒</b>";farmmoney[25]=200;
+farmmenu[26]="ランニングマシン";farmnaiyo[26]="屋内で走る。荒天影響無し。疲労大。";
+farmpower[26]="<b>速瞬</b>";farmmoney[26]=250;
+farmmenu[27]="ビーチフラッグ";farmnaiyo[27]="他の豚と旗の取り合い。疲労大。";
+farmpower[27]="<b>速持瞬</b>競";farmmoney[27]=300;
+farmmenu[28]="豚カツ実演調理";farmnaiyo[28]="「負けると豚カツにするぞ」と脅す。失敗あり。";
+farmpower[28]="<b>速瞬競跳</b>";farmmoney[28]=30;
+farmmenu[29]="乗豚アルバイト";farmnaiyo[29]="観光客を乗せて走る。収入あり。";
+farmpower[29]="速";farmmoney[29]=-100;
+farmmenu[30]="スタントアルバイト";farmnaiyo[30]="危険なアクションをする。収入あり。";
+farmpower[30]="持瞬跳";farmmoney[30]=-200;
+
+farmmenu[31]="干し草";farmnaiyo[31]="通常のエサ。";
+farmpower[31]="<b>体</b>";farmmoney[31]=20;
+farmmenu[32]="混合飼料";farmnaiyo[32]="通常のエサ。やる気も回復。";
+farmpower[32]="体や";farmmoney[32]=20;
+farmmenu[33]="みたらし団子";farmnaiyo[33]="一流職人の手による和菓子。";
+farmpower[33]="速<b>体</b>";farmmoney[33]=40;
+farmmenu[34]="チーズケーキ";farmnaiyo[34]="高級店で買ってきた洋菓子。";
+farmpower[34]="持<b>体</b>";farmmoney[34]=40;
+farmmenu[35]="ポテトチップス";farmnaiyo[35]="スーパーの特売品。";
+farmpower[35]="瞬体や";farmmoney[35]=40;
+farmmenu[36]="塩せんべい";farmnaiyo[36]="手焼きの塩味せんべい。";
+farmpower[36]="気<b>や</b>";farmmoney[36]=40;
+farmmenu[37]="かき氷";farmnaiyo[37]="海の家から産地直送。";
+farmpower[37]="競<b>や</b>";farmmoney[37]=40;
+farmmenu[38]="やきいも";farmnaiyo[38]="露店で買ってきた石焼いも。";
+farmpower[38]="跳<b>体</b>";farmmoney[38]=40;
+farmmenu[39]="角砂糖";farmnaiyo[39]="１粒の砂糖。効果大。";
+farmpower[39]="<b>体</b>や";farmmoney[39]=40;
+farmmenu[40]="栄養ドリンク";farmnaiyo[40]="滋養強壮に。効果大。";
+farmpower[40]="<b>体や</b>";farmmoney[40]=40;
+farmmenu[41]="プロテインジュース";farmnaiyo[41]="栄養豊富だが、好みが分かれる。";
+farmpower[41]="速<b>持体や</b>";farmmoney[41]=60;
+farmmenu[42]="日本酒";farmnaiyo[42]="飲みすぎに注意。";
+farmpower[42]="気<b>体や</b>";farmmoney[42]=80;
+farmmenu[43]="ニシンの缶詰";farmnaiyo[43]="臭い缶詰。ほとんどの豚は食べない。";
+farmpower[43]="<b>速</b>瞬競跳<b>体や</b>";farmmoney[43]=60;
+farmmenu[44]="サソリの唐揚げ";farmnaiyo[44]="精力がつくが、ほとんどの豚は食べない。";
+farmpower[44]="持気荒<b>体や</b>";farmmoney[44]=60;
+farmmenu[45]="焼豚";farmnaiyo[45]="共食い？";
+farmpower[45]="<b>速</b>持瞬<b>競</b>跳<b>体</b>";farmmoney[45]=80;
+
+farmmenu[46]="放牧";farmnaiyo[46]="放し飼いにして体力回復させる。";
+farmpower[46]="<b>体</b>や";farmmoney[46]=10;
+farmmenu[47]="銭湯";farmnaiyo[47]="風呂に入れる。";
+farmpower[47]="持<b>体や</b>";farmmoney[47]=30;
+farmmenu[48]="温泉";farmnaiyo[48]="銭湯より効果大。";
+farmpower[48]="気競<b>体や</b>";farmmoney[48]=60;
+farmmenu[49]="マッサージ";farmnaiyo[49]="疲れを取り能力アップ。";
+farmpower[49]="速持<b>体や</b>";farmmoney[49]=60;
+farmmenu[50]="豚ドック";farmnaiyo[50]="健康診断を行い、しばらく休ませる。";
+farmpower[50]="気荒<b>体や</b>";farmmoney[50]=100;
+farmmenu[51]="グアム旅行";farmnaiyo[51]="バカンスを楽しんでもらう。";
+farmpower[51]="持<b>気</b>競荒<b>体や</b>";farmmoney[51]=200;
+
+farmmenu[52]="仮面";farmnaiyo[52]="視野を狭め、気性を落ち着かせる。【顔】";
+farmpower[52]="<b>気</b>";farmmoney[52]=300;
+farmmenu[53]="魚眼コンタクト";farmnaiyo[53]="視野を広め、気性を荒くする。【顔】";
+farmpower[53]="<b>気</b>";farmmoney[53]=300;
+farmmenu[54]="怪しいサングラス";farmnaiyo[54]="周りにいる豚を威圧する。【顔】";
+farmpower[54]="<b>競</b>";farmmoney[54]=400;
+farmmenu[55]="蹄鉄";farmnaiyo[55]="足元の強化。【脚】";
+farmpower[55]="<b>速跳</b>";farmmoney[55]=400;
+farmmenu[56]="長靴";farmnaiyo[56]="荒天でも快適に走れる。【脚】";
+farmpower[56]="<b>速荒</b>";farmmoney[56]=400;
+farmmenu[57]="エアマキシム95";farmnaiyo[57]="幻のスニーカー。【脚】";
+farmpower[57]="<b>速跳荒や</b>";farmmoney[57]=1000;
+//58 産み分け師
+//59 極秘合宿
+farmmenu[59]="極秘合宿";farmnaiyo[59]="とある山奥で行われる厳しい合宿";
+farmpower[59]="<b>速持瞬気競跳荒</b>";farmmoney[59]=300;
+
+//60パスワード引退
+farmmenu[60]="パスワード引退";farmnaiyo[60]="引退して親豚になる代わりにパスワードを入手します。パスワードは親豚を牧場に入れるときに使います。";
+farmpower[60]="";farmmoney[60]=0;
+
+//61親豚パスワード
+farmmenu[61]="親豚パスワード復活";farmnaiyo[61]="パスワードを利用して親豚を牧場に入れます。1ゲーム1頭に限り復活できます。";
+farmpower[61]="";farmmoney[61]=0;
+
+//62エンディング視聴
+//63 予備
+
+function gameini(){
+	//初期設定
+	gameflag=true;
+	nowrace=-1;
+	for(i=0;i<224;i++) history[i]="－－－";
+	for(i=0;i<52;i++){
+		todaykoten[i]=4;
+		todaywin[i]="－－－";
+		todayqui[i]="－";
+	}
+	for(i=100;i<112;i++){
+		butaname[i]=999;butapow[i]="";
+	}
+	//nextrace();
+}
+
+var nowmode="race";
+
+function gomenu(n){
+	if(nowrace==-1) nextrace();
+	moveLAYER("bt_race",0,-100);
+	moveLAYER("bt_farm",0,-100);
+	var jumpmenu="bt_"+n;
+	nowmode=n;
+	moveLAYER(jumpmenu,10,50);
+	if(n=="race"){
+		parent.track.document.images[0].src=img1.src;
+		parent.track.document.images[1].src=img3.src;
+		parent.track.document.images[3].src=img5.src;
+		trackmenu(0,false);
+		parent.track.selectpig(0);
+	}
+	if(n=="farm"){
+		parent.track.document.images[0].src=img2.src;
+		parent.track.document.images[1].src=img4.src;
+		parent.track.document.images[3].src=img6.src;
+		trackmenu(6,false);
+		parent.track.selectpig(0);
+		//イベントの発生
+		if(farmevent>0){
+			alert("牧場の様子が変です");
+			if(farmevent<52){//豚主メニュー追加イベント
+				if(farmevent==18 || farmevent==43 || farmevent==45 || farmevent==44 || farmevent==28){
+					msg="調教師から提案があるようです。\n\n「オーナー、ちょっと調子の上がらない豚がいますね。あまりやりたくはありませんが、ここらで変化をつけるために";
+					msg+=farmmenu[farmevent]+"をしてみてはどうでしょう。」";
+				}
+				else{
+					if(farmevent<11 || (farmevent>38 && farmevent<43)){
+						msg="調教師から提案があるようです。\n\n「オーナー、この前雑誌で読んだのですが、競豚業界では今";
+						msg+=farmmenu[farmevent]+"が流行っているようですね。うちも取り入れましょう！」";
+					}
+					else{
+						if(farmevent==29 || farmevent==30){
+							msg="人材派遣会社の人が来ています。\n\n「オーナー、そちらに全然勝てない豚がいるようですね。競争豚の道はあきらめて";
+							msg+=farmmenu[farmevent]+"でもしてみませんか？　お返事お待ちしています。」";
+						}
+						else{
+							if(farmevent==51){
+								msg="調教師が嬉しそうにやってきました。\n\n「オーナー、うちの牧場の総獲得賞金が5000ptsを突破しました！　お祝いとして豚たちを旅行にでも連れて行きましょう！」";
+							}
+							else{
+								msg="ダイレクトメールが届いています。\n\n「オーナーもそろそろ愛豚の育成に";
+								msg+=farmmenu[farmevent]+"を導入してはいかがですか？　使った分だけ支払うシステムですので、頭金のご心配は不要です！」";
+							}
+						}
+					}
+				}
+				alert(msg);
+				if(farmevent>=8 && farmevent<=30) msg="特訓に";
+				if(farmevent>=39 && farmevent<=45) msg="おやつに";
+				if(farmevent>=48 && farmevent<=51) msg="療養に";
+				
+				msg+=farmmenu[farmevent];
+				
+				msg+="が増えました。";
+				alert(msg);
+				eventflag[farmevent]=true;
+			}
+			else{//その他特殊イベント
+				if(farmevent<100){
+					msg="謎の行商が来ています。\n\n「愛豚の特訓もいいですけど、装備品で一気に能力改善しませんか？　今日は";
+					msg+=farmmenu[farmevent]+"を持ってきました。すぐに買えとは申しません。カタログを置いときますので、欲しくなったら連絡してください。」"
+					alert(msg);
+					msg="装備に"+farmmenu[farmevent]+"が増えました。";
+					alert(msg);
+					eventflag[farmevent]=true;
+				}
+				if(Math.floor(farmevent/100)==1){
+					msg="調教師が青ざめています。\n\n「オーナー、"+ownerpig[farmevent-100]+"が牧場にいません！　脱走したようです！」";
+					alert(msg);
+					msg="「そういえば、"+ownerpig[farmevent-100]+"にはあまり優しくしてませんでしたから…。私たちに責任があるかもしれませんね。今後はこういう事の無いようしっかり調教していきましょう！」";
+					ownerpig[farmevent-100]="";
+					ownerpow[farmevent-100]="0000000000000000000000000";
+					ownertype[farmevent-100]=0;
+					ownerwin[farmevent-100]="0000000000000";
+					youiku[farmevent-100]=0;
+					parent.track.selectpig(farmevent-100);
+					alert(msg);
+				}
+				if(Math.floor(farmevent/100)==2){
+					msg="調教師が青ざめています。\n\n「オーナー、大変です！"+ownerpig[farmevent-200]+"がケガで入院しました。完治まで３週間かかるようです。」";
+					alert(msg);
+					msg="「体力が極端に少なかったのが原因のようです。今後はおやつなどで体力を高めに維持しておかないといけませんね。」";
+					//老化度
+					ownerpowup(farmevent-200,0,0,0,0,0,0,0,0,0,3,0,0);
+					ownerwin[farmevent-200]=ownerwin[farmevent-200].substring(0,12)+"3";
+					ownerpow[farmevent-200]=ownerpow[farmevent-200].substring(0,15)+"099"+ownerpow[farmevent-200].substring(18,ownerpow[farmevent-200].length);
+					parent.track.selectpig(farmevent-200);
+					alert(msg);
+				}
+				if(Math.floor(farmevent/100)==3){
+					msg="調教師が青ざめています。\n\n「オーナー、大変です！"+ownerpig[farmevent-300]+"が腹痛で入院しました。完治まで３週間かかるようです。」";
+					alert(msg);
+					msg="「おやつの食べすぎが原因のようです。今後は特訓などで適度に体力を落としておかないといけませんね。」";
+					//老化度
+					ownerpowup(farmevent-300,0,0,0,0,0,0,0,0,0,3,0,0);
+					ownerwin[farmevent-300]=ownerwin[farmevent-300].substring(0,12)+"3";
+					parent.track.selectpig(farmevent-300);
+					ownerpow[farmevent-300]=ownerpow[farmevent-300].substring(0,15)+"099"+ownerpow[farmevent-300].substring(18,ownerpow[farmevent-300].length);
+					alert(msg);
+				}
+				if(Math.floor(farmevent/100)==4){
+					msg="調教師が暗い表情をしています。\n\n「オーナー、残念なお知らせです。"+ownerpig[farmevent-400]+"が死亡しました…。」";
+					alert(msg);
+					msg="「今思えば、"+ownerpig[farmevent-400]+"は競争豚として厳しい特訓に良く耐えてくれましたよね。もっと世話してやりたかった…。冥福を祈りましょう。」";
+					ownerpig[farmevent-400]="";
+					ownerpow[farmevent-400]="0000000000000000000000000";
+					ownertype[farmevent-400]=0;
+					ownerwin[farmevent-400]="0000000000000";
+					youiku[farmevent-400]=0;
+					parent.track.selectpig(farmevent-400);
+					alert(msg);
+				}
+				if(Math.floor(farmevent/100)==5){
+					var sashiire=Math.floor(Math.random()*14)+31;
+					msg="小包が届いています。\n\n「ファンから"+ownerpig[farmevent-500]+"へ、"+farmmenu[sashiire]+"の差し入れのようですね。食べさせますか？」";
+					henji=confirm(msg);
+					if(henji){
+						parent.track.selectpig(farmevent-500);
+						training(sashiire);
+					}
+					else alert("気持ちは嬉しいんですけど、豚の体調とかもありますからね。");
+				}
+				if(Math.floor(farmevent/100)==6){
+					sellmoney=(eval(ownerpow[farmevent-600].substring(0,2))-50)*20;
+					msg="謎の老人が来ています。\n\n「先ほどの"+ownerpig[farmevent-600]+"の走り、非常にすばらしかった。ぜひ私の所で育てたい。"+sellmoney+" pts 出すから引き取らせてくれ！」\n\n"+ownerpig[farmevent-600]+"を売りますか？";
+					henji=confirm(msg);
+					if(henji){
+						msg=ownerpig[farmevent-600];
+						msg+="は売却しました。";
+						ownerpig[farmevent-600]="";
+						ownerpow[farmevent-600]="0000000000000000000000000";
+						ownertype[farmevent-600]=0;
+						ownerwin[farmevent-600]="0000000000000";
+						youiku[farmevent-600]=0;
+						mymoney+=sellmoney;
+						alert(msg);
+						parent.track.selectpig(farmevent-600);
+					}
+					else alert("「そうですか…。それは残念です。でも諦めませんよ。」");
+				}
+				if(Math.floor(farmevent/100)==7){
+					msg="雑誌記者が来ています。\n\n「私、『季刊　豚主通信』で記者をやってます、特種 博と申します。"+ownerpig[farmevent-700]+"の快進撃について取材させてもらいたいのですが、よろしいでしょうか？」\n\n"+ownerpig[farmevent-700]+"の取材に応じますか？";
+					henji=confirm(msg);
+					if(henji){
+						ownerpowup(farmevent-700,0,0,0,0,0,0,0,-10,0,0,0,0);
+						syuzaihi=eval(ownerwin[farmevent-700].substring(0,2))*1000+eval(ownerwin[farmevent-700].substring(2,4))*10+eval(ownerwin[farmevent-700].charAt(4));
+						mymoney+=syuzaihi;
+						alert("たくさん写真を撮られ、"+ownerpig[farmevent-700]+"は少し疲れたようです。\n\n「いや～、今日はありがとうございました。良い記事が書けそうです。これは簿謝です。とっておいてください。」\n\n取材費として"+syuzaihi+" pts もらった");
+					}
+					else alert("「また機会がありましたら、その際はよろしくお願いします。」");
+				}
+				if(Math.floor(farmevent/100)==8){
+					msg="謎のコーチが来ています。\n\n「"+ownerpig[farmevent-800]+"は大物の予感がする。300pts 支払って、私の発案したENSトレーニングを試してみないか？」\n\n"+ownerpig[farmevent-800]+"をトレーニングさせますか？";
+					henji=confirm(msg);
+					if(henji){
+						mymoney-=300;
+						ownerpowup(farmevent-800,6,0,6,0,6,6,0,0,0,0,0,0);
+						alert(ownerpig[farmevent-800]+"に試してみました。\n「ENSトレーニングは10分間の運動で背筋600回と同じ効果が得られるのだ！　しかも疲れない！　どうだ、素晴らしいだろう！」\nそう言うとコーチは帰っていった。\n\n確かに、能力が上がった気がする…。すごいかも。");
+					}
+					else alert("「ENSトレーニングは時間と場所を選ばない！　いつでも呼んでくれたまえ！」");
+				}
+				if(Math.floor(farmevent/100)==9){
+					msg="手紙が届いています。\n\n「我々は国際競豚審議会です。厳正なる審議の結果、"+ownerpig[farmevent-900]+"を海外G1レース・"+r_name[nowrace+4]+"に招待する事に決定しました。ぜひお越しください。」\n\n"+r_name[nowrace+4]+"に出走しますか？";
+					henji=confirm(msg);
+					if(henji){
+						msg=ownerpig[farmevent-900]+"を海外G1・"+r_name[nowrace+4]+"にエントリーしました。世界一を狙いましょう！\nレースを終えるまでこの豚に指示を与える事はできません。";
+						butaname[100+farmevent-900]=nowrace+4;
+						parent.track.selectpig(farmevent-900);
+					}
+					else{
+						msg="お断りの手紙を出しておきました。";
+					}
+					alert(msg);
+				}
+				if(farmevent==1000){
+					alert("火事だ～～！");
+					alert("調教師が青ざめています。\n\n「オーナー、牧場が火事になってしまいました！　さいわい豚たちは無事ですが、施設のほとんどが使えなくなってしまいました。」");
+					for(i=8;i<64;i++) eventflag[i]=false;
+					for(i=0;i<8;i++) eventflag[i]=true;
+					eventflag[11]=true;eventflag[12]=true;eventflag[13]=true;
+					eventflag[14]=true;eventflag[15]=true;eventflag[16]=true;
+					eventflag[31]=true;eventflag[32]=true;eventflag[33]=true;
+					eventflag[34]=true;eventflag[35]=true;eventflag[36]=true;
+					eventflag[37]=true;eventflag[38]=true;eventflag[46]=true;
+					eventflag[47]=true;eventflag[55]=true;eventflag[60]=true;
+					eventflag[61]=true;
+				}
+				if(farmevent==1001){
+					msg="白衣を着た人が来ています。\n\n「私は男女産み分け師。仔豚の種付け時に男女どちらでも産めるようにします。1000pts 支払って私を雇ってください。」\n\n男女産み分け士を雇いますか？";
+					henji=confirm(msg);
+					if(henji){
+						if(mymoney>=1000){
+							mymoney-=1000;
+							alert("「それでは次回の種付けから、産み分けをしたいと思います。」");
+							eventflag[58]=true;
+						}
+						else alert("「あ、持ち点が足りませんね。また来ます。」");
+					}
+					else alert("「産み分けたくなったら、また呼んでください。」");
+				}
+				if(farmevent==1002){
+					msg="眼鏡をかけた若者が来ています。\n\n「どうも、作者です。このたび、あなたは全ての育成メニューを出す事に成功しました。たぶん海外G1で勝つよりも難しいです。素晴らしい。そんなオーナーに私からのプレゼントです。これで最強の豚を育ててください。」";
+					alert(msg);
+					alert("特訓に極秘合宿が増えました。");
+					eventflag[59]=true;
+				}
+			}
+		}
+		output_status();
+		farmevent=0;
+	}
+}
+
+function output_status(){
+	//レース番号から月週を求める
+	var month=0;
+	var week=0;
+	if(nowrace==-1){
+		month=1;
+		week=1;
+	}
+	else{
+		if((nowrace+1)%13==0){//5週目の処理
+			month=Math.floor((nowrace+1)/13)*3;
+			week=5;
+		}
+		else{
+			month=Math.floor(nowrace/13)*3+Math.floor(nowrace%13/4)+1;
+			week=Math.floor(nowrace%13%4)+1;
+		}
+	}
+	outputLAYER("status",'<table border=0 height=40><tr><td bgcolor="#ADD8E6">　　'+nowyear+'年目 '+month+'月 '+week+'週　　</td><td bgcolor="#FFB6C1">　　'+mymoney+' pts　　</td></tr></table>');
+}
+
+function trackmenu(n,outputwin){
+	var msg="<table border=0 width=630><tr>";
+	//競豚場メニュー
+	//outputwinがtrueなら別ウインドウ表示
+	switch(n){
+	case 0:
+		//天候データの書き込み
+		todaykoten[nowrace]=koten;
+		
+		var nowcourse=0;
+		if(r_course[nowrace]>9) nowcourse=r_course[nowrace]-10;//障害レース
+		else nowcourse=r_course[nowrace];
+		
+		msg+='<td bgcolor=008080>';//背景テーブル
+		msg+='<br><table border=0 width=100% cellSpacing=0><tr><td bgcolor='+grade_color[r_grade[nowrace]]+' rowspan=2><font size=5> G'+Math.max(r_grade[nowrace]-4,1)+'</font></td><td bgcolor="#C8CCC8" rowspan=2><font size=5><b>'+r_name[nowrace]+'</b></font></td><td bgcolor="#C8CCC8">'+course_list[nowcourse]+'競豚場 ';
+		msg+=baba_list[nowcourse];
+		
+		msg+=' '+r_kyori[nowrace]+'m ';
+		if(r_course[nowrace]>9) msg+='障害 ';
+		msg+=tenki[koten]+'</td><td rowspan=2 bgcolor="#C8CCC8" align=right>';
+		if(!outputwin) msg+='<a href="JavaScript:trackmenu(0,true);"><img src="button_subwin.gif" alt="別ウインドウで表示" border=0></a>';
+		msg+='<a href="help/race2.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr><tr><td bgcolor="#C8CCC8">賞金：'+award_list[r_grade[nowrace]]+'・'+award_list[r_grade[nowrace]]*0.5+'・'+award_list[r_grade[nowrace]]*0.3+'・'+award_list[r_grade[nowrace]]*0.2+'・'+award_list[r_grade[nowrace]]*0.1+'</td></tr></table><br>';
+		msg+='<table border=0 cellPadding=1 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'枠</th>'+thc+'豚</th>'+thc+'名前</th>'+thc+'脚</th><th colspan=2 align=center bgcolor=cccccc>前々</th><th colspan=2 align=center bgcolor=cccccc>前走</th>'+thc+'短評</th>'+thc+'単勝</th>'+thc+'予想</th>'+thc+'豚</th></tr>';
+		var odds;
+		for(i=0;i<12;i++){
+			//単勝
+			odds=kitaitotal/kitai[i];
+			if(bet_form[i]>100 && raceflag) odds-=odds*(Math.sqrt(bet_form[i])/1000);//オッズ変動
+			odds=Math.max(Math.floor(odds*10)/10,1);
+			if(odds%1==0) odds+=0.1;
+			msg+='<tr><td align=center bgcolor='+wakucolor[Math.floor(i/2)]+'>'+(Math.floor(i/2)+1)+'</td><td align=center bgcolor='+wakucolor[Math.floor(i/2)]+'>'+(i+1)+'</td><td bgcolor="#';
+			
+			if(entrynum[i]>99) msg+='FFA500">';
+			else msg+='cccccc">';
+			msg+=butaname[entrynum[i]]+'</td>'+tdc+ashi[eval(butapow[entrynum[i]].substring(14,15))]+'</td>';
+			//前々
+			if(history[entrynum[i]+112]=="－－－") msg+=tdc+"－</td>"+tdc+"－－";
+			else{
+				padohis=history[entrynum[i]+112].split("_");
+				msg+="<td align=center bgcolor="+grade_color[r_grade[padohis[0]]]+">G"+Math.max(r_grade[padohis[0]]-4,1)+"</td>"+tdc;
+				if(padohis[2]<4) msg+='<font color=red><b>'+padohis[2]+'</b>着 '+'</font>';
+				else msg+=padohis[2]+'着 ';
+			}
+			//前走
+			if(history[entrynum[i]]=="－－－") msg+=tdc+"－</td>"+tdc+"－－";
+			else{
+				padohis=history[entrynum[i]].split("_");
+				msg+="<td align=center bgcolor="+grade_color[r_grade[padohis[0]]]+">G"+Math.max(r_grade[padohis[0]]-4,1)+"</td>"+tdc;
+				if(padohis[2]<4) msg+='<font color=red><b>'+padohis[2]+'</b>着 '+'</font>';
+				else msg+=padohis[2]+'着 ';
+			}
+			msg+='</td>';
+			msg+='</td>'+tdc;
+			//短評
+			if(odds<4) msg+="勝利確信";
+			else{if(odds>6 && odds<8){
+				if(cmnt[i]<0.5) msg+="軸堅い";
+				else msg+="好勝負";
+			}
+			else{if(odds>10 && odds<15){
+				if(cmnt[i]<0.2) msg+="能力十分";
+				else{if(cmnt[i]<0.6) msg+="入着まで";
+				else msg+="決め手欠く";}
+			}
+			else{if(odds>20 && odds<30){
+				if(cmnt[i]<0.3) msg+="穴で一考";
+				else{if(cmnt[i]<0.7) msg+="素質平凡";
+				else msg+="上位難しい";}
+			}
+			else{if(odds>40 && odds<100){
+				if(cmnt[i]<0.2) msg+="入着無理";
+				else{if(cmnt[i]<0.4) msg+="狙い目無し";
+				else{if(cmnt[i]<0.6) msg+="大穴狙いで";
+				else{if(cmnt[i]<0.8) msg+="力不足";
+				else msg+="まず来ない";}}}
+			}
+			else{if(odds>=100) msg+="問題外";
+			else{if(eval(butapow[entrynum[i]].substring(2,4))>80 && cmnt[i]<0.5) msg+="距離得意";
+			else{if(eval(butapow[entrynum[i]].substring(2,4))<60 && cmnt[i]<0.5) msg+="短距離なら";
+			else{if(eval(butapow[entrynum[i]].substring(12,14))>80 && cmnt[i]<0.5) msg+="荒天得意";
+			else{if(eval(butapow[entrynum[i]].substring(12,14))<60 && cmnt[i]<0.5) msg+="荒天苦手";
+			else{if(eval(butapow[entrynum[i]].substring(6,8))>40 && cmnt[i]<0.5) msg+="一発注意";
+			else{if(eval(butapow[entrynum[i]].substring(6,8))<10 && cmnt[i]<0.5) msg+="変わり身無";
+			else{
+				if(eval(butapow[entrynum[i]].substring(0,2))>80){
+					if(eval(butapow[entrynum[i]].substring(14,15))==1) msg+="大逃げ注意";
+					else{
+						if(eval(butapow[entrynum[i]].substring(14,15))==4) msg+="追込み期待";
+						else msg+="速さ抜群";
+					}
+				}
+				else{if(eval(butapow[entrynum[i]].substring(0,2))<60){
+					if(eval(butapow[entrynum[i]].substring(14,15))==1) msg+="逃げ切り難";
+					else{
+						if(eval(butapow[entrynum[i]].substring(14,15))==4) msg+="追込難しい";
+						else msg+="速さ劣る";
+					}
+				}
+			else{if(eval(butapow[entrynum[i]].substring(8,10))>80) msg+="混戦強い";
+			else{if(eval(butapow[entrynum[i]].substring(8,10))<20) msg+="粘りが無い";
+			else{if(odds<11) msg+="期待度大";
+				else msg+="紛れて着";
+				}
+			}}}}}}}}}}}}}}}
+			msg+='</td>'+tdr;
+			
+			if(odds<10) msg+='<font color=red><b>'+odds+'</b></font>';
+			else msg+=odds;
+			msg+='</td>'+tdc+mark[i]+'</td><td align=center bgcolor='+wakucolor[Math.floor(i/2)]+'>'+(i+1)+'</td></tr>';
+		}
+		msg+='<tr><td bgcolor="#C8CCC8" colspan=12><p align=center>本紙記者 時玉勝夫の<font size=+1><b>続・俺についてこい！</b></font></p><img src="katuo.gif" align=left alt="かなり怪しいですが、本誌直属の記者です">';
+		msg+=tokitama;
+		msg+='</table>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 1:
+		msg+='<td bgcolor=ff8080>';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=red><font size=5 color=pink>単勝</font> <font color=white size=2>１着になる豚を予想します。</font></td><td bgcolor="#F07C10"><font size=5 color="#FFDEAD">複勝</font> <font color=white size=2>３着以内に入る豚を予想します。</font></td>'+tdr+'<a href="help/race3.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table><br>';
+		msg+='<form name="betform"><table border=0 align=center width=100% cellPadding=1 cellSpacing=1 bgcolor=000000><tr>'+thc+'豚</th>'+thc+'名前</th>'+thc+'単勝倍率</th><th bgcolor=pink>単勝ベット</th>'+thc+'複勝倍率</th><th bgcolor=FFDEAD>複勝ベット</th>'+thc+'豚</th></tr>';
+		for(i=0;i<12;i++){
+			odds=Math.max(Math.floor((kitaitotal/kitai[i])*10)/10,1);
+			if(odds%1==0) odds+=0.1;
+			msg+='<tr><td bgcolor='+wakucolor[Math.floor(i/2)]+'>'+(i+1)+'</td><td bgcolor=cccccc>'+butaname[entrynum[i]]+'</td>'+tdr;
+			if(odds<10) msg+='<font color=red><b>'+odds+'</b></font>';
+			else msg+=odds;
+			
+			odds=Math.max(Math.floor((odds/3)*10)/10,1);
+			if(odds%1==0) odds+=0.1;
+			msg+='</td><td bgcolor=pink align=center><input type=text size=6 value='+bet_form[i]+' onChange=moneyout('+i+',this);></td>'+tdr;
+			if(odds<10) msg+='<font color=red><b>'+odds+'</b></font>';
+			else msg+=odds;
+			msg+='</td><td bgcolor=FFDEAD align=center><input type=text size=6 value='+bet_form[i+12]+' onChange=moneyout('+(i+12)+',this);></td><td bgcolor='+wakucolor[Math.floor(i/2)]+'>'+(i+1)+'</td></tr>';
+		}
+		msg+='</table></form>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 2:
+		msg+='<td bgcolor="#88CCF2">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=blue><font size=5 color="#88CCF2">枠連</font> <font color=white size=2>１・２着に入る枠番（ゼッケンの色）を予想します。</font></td>'+tdr+'<a href="help/race4.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table>';
+		msg+='<form name="betform"><table border=0 align=center width=100% cellPadding=0 cellSpacing=1 bgcolor=000000><tr>'+thc+'枠</th>';
+		for(i=0;i<6;i++) msg+='<th bgcolor='+wakucolor[i]+'>'+(i+1)+'</th>';
+		msg+='</tr>';
+		form_output_count=0;
+		for(i=1;i<=6;i++){
+			msg+="<tr>";
+			for(j=0;j<6;j++){
+				if(j==0) msg+='<th bgcolor='+wakucolor[i-1]+'>'+i+'</th>';
+				if(j>=i-1){
+					//odds
+					if(j==i-1) odds=(kitaitotal*kitaitotal)/(kitai[j*2]*kitai[j*2+1]*5);
+					else odds=(kitaitotal*kitaitotal)/((kitai[j*2]+kitai[j*2+1])*(kitai[i*2-1]+kitai[i*2-2])*5);
+					odds=Math.max(Math.floor(odds*10)/10,1);
+					if(odds%1==0) odds+=0.1;
+					if(odds<10) msg+=tdc+'<font color=red><b>'+odds+'</b></font>';
+					else msg+=tdc+''+odds;
+					msg+='<br><input type=text size=4 value='+bet_form[form_output_count+24]+' onChange=moneyout('+(form_output_count+24)+',this);></td>';
+					form_output_count++;
+				}
+				else msg+=tdc+'</td>';
+			}
+			msg+='</tr>';
+		}
+		msg+='</table></form>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 3:
+		msg+='<td bgcolor="#90F090">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=green><font size=5 color="#90F090">豚連</font> <font color=white size=2>１・２着に入る豚番（ゼッケンの番号）を予想します。</font></td>'+tdr+'<a href="help/race5.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table>';
+		msg+='<form name="betform"><table border=0 align=center width=100% cellPadding=0 cellSpacing=1 bgcolor=000000><tr>'+thc+'豚</th>';
+		for(i=1;i<12;i++) msg+=thc+(i+1)+'</th>';
+		msg+='</tr>';
+		form_output_count=0;
+		for(i=0;i<12;i++){
+			msg+="<tr>";
+			for(j=1;j<=12;j++){
+				if(j==i+1) msg+=thc+(i+1)+'</th>';
+				else{
+					if(j>i+1){
+						//odds
+						odds=(kitaitotal*kitaitotal)/(kitai[i]*kitai[j-1]*5);
+						odds=Math.max(Math.floor(odds*10)/10,1);
+						if(odds%1==0) odds+=0.1;
+						if(odds<10) msg+=tdc+'<font color=red><b>'+odds+'</b></font>';
+						else msg+=tdc+''+odds;
+						msg+='<br><input type=text size=4 value='+bet_form[form_output_count+45]+' onChange=moneyout('+(form_output_count+45)+',this);></td>';
+						form_output_count++;
+					}
+					else msg+=tdc+'</td>';
+				}
+			}
+			msg+='</tr>';
+		}
+		msg+='</table><table border=0 align=center width=100% cellPadding=0 cellSpacing=1 bgcolor=000000><tr>'+tdc+'ボックスベット<br>ボックス賭けをする番号にチェックを入れてください<br><input type=checkbox onClick="boxcheck(66)">1 <input type=checkbox onClick="boxcheck(66)">2 <input type=checkbox onClick="boxcheck(66)">3 <input type=checkbox onClick="boxcheck(66)">4 <input type=checkbox onClick="boxcheck(66)">5 <input type=checkbox onClick="boxcheck(66)">6 <input type=checkbox onClick="boxcheck(66)">7 <input type=checkbox onClick="boxcheck(66)">8 <input type=checkbox onClick="boxcheck(66)">9 <input type=checkbox onClick="boxcheck(66)">10 <input type=checkbox onClick="boxcheck(66)">11 <input type=checkbox onClick="boxcheck(66)">12<br><input type=text size=4 style="background-color:#cccccc">通り×<input type=text size=4 style="background-color:#A8FFA8">点 <input type=button value="ベット" onClick="boxbet(66,2);"></td></tr>';
+		msg+='</table></form>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 4:
+		msg+='<td bgcolor="#FFC0FF">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=magenta><font size=5 color="#FFC0FF">ワイド</font> <font color=white size=2>豚番連勝と同じですが、１・３着、２・３着でも当たりとなります。</font></td>'+tdr+'<a href="help/race6.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table>';
+		msg+='<form name="betform"><table border=0 align=center width=100% cellPadding=0 cellSpacing=1 bgcolor=000000><tr>'+thc+'豚</th>';
+		for(i=1;i<12;i++) msg+=thc+(i+1)+'</th>';
+		msg+='</tr>';
+		form_output_count=0;
+		for(i=0;i<12;i++){
+			msg+="<tr>";
+			for(j=1;j<=12;j++){
+				if(j==i+1) msg+=thc+(i+1)+'</th>';
+				else{
+					if(j>i+1){
+						//odds
+						odds=(kitaitotal*kitaitotal)/(kitai[i]*kitai[j-1]*5);
+						odds=odds/Math.log(odds);
+						odds=Math.max(Math.floor(odds*10)/10,1);
+						if(odds%1==0) odds+=0.1;
+						if(odds<10) msg+=tdc+'<font color=red><b>'+odds+'</b></font>';
+						else msg+=tdc+''+odds;
+						msg+='<br><input type=text size=4 value='+bet_form[form_output_count+111]+' onChange=moneyout('+(form_output_count+111)+',this);></td>';
+						form_output_count++;
+					}
+					else msg+=tdc+'</td>';
+				}
+			}
+			msg+='</tr>';
+		}
+		msg+='</table><table border=0 align=center width=100% cellPadding=0 cellSpacing=1 bgcolor=000000><tr>'+tdc+'ボックスベット<br>ボックス賭けをする番号にチェックを入れてください<br><input type=checkbox onClick="boxcheck(66)">1 <input type=checkbox onClick="boxcheck(66)">2 <input type=checkbox onClick="boxcheck(66)">3 <input type=checkbox onClick="boxcheck(66)">4 <input type=checkbox onClick="boxcheck(66)">5 <input type=checkbox onClick="boxcheck(66)">6 <input type=checkbox onClick="boxcheck(66)">7 <input type=checkbox onClick="boxcheck(66)">8 <input type=checkbox onClick="boxcheck(66)">9 <input type=checkbox onClick="boxcheck(66)">10 <input type=checkbox onClick="boxcheck(66)">11 <input type=checkbox onClick="boxcheck(66)">12<br><input type=text size=4 style="background-color:#cccccc">通り×<input type=text size=4 style="background-color:#FFC0FF">点 <input type=button value="ベット" onClick="boxbet(66,3);"></td></tr>';
+		msg+='</table></form>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 5:
+		msg+='<td bgcolor="#FFE0B0">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor="#F07C10"><font size=5 color="#FFE0B0">日程表</font></td>'+tdc+'現在 '+nowyear+' 年目・開始時持ち点： '+startmoney+' pts</td>'+tdr;
+		if(!outputwin) msg+='<a href="JavaScript:trackmenu(5,true);"><img src="button_subwin.gif" alt="別ウインドウで表示" border=0></a>';
+		msg+='<a href="help/race7.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table><br>';
+		msg+='<table border=0 align=center width=100% cellPadding=1 cellSpacing=1 bgcolor=000000><tr>'+thc+'月</th>'+thc+'週</th>'+thc+'G</th>'+thc+'レース名</th>'+thc+'コース・距離</th>'+thc+'賞金</th>'+thc+'勝利豚名</th>'+thc+'豚連</th></tr>';
+		for(i=0;i<52;i++){
+			msg+="<tr>";
+			var bgc="cccccc";//セル背景色
+			if(i==nowrace) bgc="ffffff";
+			if((i+1)%13==0){//5週目の処理
+				msg+='<td bgcolor='+bgc+' align=center>'+Math.floor((i+1)/13)*3+'</td><td bgcolor='+bgc+' align=center>5</td>';
+			}
+			else{
+				msg+='<td bgcolor='+bgc+' align=center>'+(Math.floor(i/13)*3+Math.floor(i%13/4)+1)+'</td><td bgcolor='+bgc+' align=center>'+(Math.floor(i%13%4)+1)+'</td>';
+			}
+			
+			msg+='<td bgcolor='+grade_color[r_grade[i]]+' align=center>G'+Math.max(r_grade[i]-4,1)+'</td>';
+			msg+='<td bgcolor='+bgc+' align=center>'+r_name[i];
+			if(r_grade[i]==0) msg+=" 【海外】";
+			msg+='</td>';
+			if(i==9 || i==15 || i==22 || i==25 || i==28 || i==33 || i==34 || i==40 || i==44 || i==49)
+			msg+='<td bgcolor='+bgc+' align=center>'+course_list[r_course[i]-10]+' '+r_kyori[i]+"障";
+			else msg+='<td bgcolor='+bgc+' align=center>'+course_list[r_course[i]]+' '+r_kyori[i];
+			
+			
+			msg+=' '+tenki[todaykoten[i]];
+			msg+='</td>';
+			msg+='<td bgcolor='+bgc+' align=right>'+award_list[r_grade[i]]+'</td>';
+			msg+='<td bgcolor='+bgc+' align=center>'+todaywin[i]+'</td>';
+			msg+='<td bgcolor='+bgc+' align=right>'+todayqui[i]+'</td>';
+			msg+='</tr>';
+			
+		}
+		msg+='</table>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 6:
+		msg+='<td bgcolor="#FFFFC0">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor="#FFFF40"><font size=5>出走登録（現役豚のみ）</font><br><font size=2>レースに出走します。豚のグレード（G）と同じグレードのレースのみ出走できます。</font></td>'+tdr+'<a href="help/farm1.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table><br>';
+		msg+='<table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'日程</th>'+thc+'レース名</th>'+thc+'G</th>'+thc+'競豚場</th>'+thc+'距離</th>'+thc+'賞金</th>'+thc+'登録</th></tr>';
+		for(i=0;i<3;i++){
+			//レース番号から月週を求める
+			var month=0;
+			var week=0;
+			if(((nowrace+2+i)%52)%13==0){//5週目の処理
+				month=Math.floor(((nowrace+1+i)%52)/13)*3+3;
+				week=5;
+			}
+			else{
+				month=Math.floor(((nowrace+1+i)%52)/13)*3+Math.floor(((nowrace+1+i)%52)%13/4)+1;
+				week=Math.floor(((nowrace+1+i)%52)%13%4)+1;
+			}
+			msg+='<tr>'+tdc+month+'月'+week+'週</td>'+tdc+r_name[(nowrace+1+i)%52]+'</td><td align=center bgcolor='+grade_color[r_grade[(nowrace+1+i)%52]]+'>G'+Math.max(r_grade[(nowrace+1+i)%52]-4,1)+'</td>'+tdc+course_list[r_course[(nowrace+1+i)%52]%10]+'</td>'+tdc+r_kyori[(nowrace+1+i)%52]+'m';
+			if(r_course[(nowrace+1+i)%52]>9) msg+=' 障害';
+			msg+='</td>'+tdr+award_list[r_grade[(nowrace+1+i)%52]]+'</td>'+tdc;
+			if(r_grade[(nowrace+1+i)%52]==0) msg+="招待レース";
+			else msg+='<a href="JavaScript:entry('+(nowrace+1+i)%52+')">登録</a>';
+			msg+="</td></tr>";
+			
+		}
+		msg+='</table>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 7:
+		msg+='<td bgcolor="#90C4C0">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor="#008080"><font size=5 color="#90C4C0">生産（親豚・現役豚）</font><br><font size=2 color=white>親豚の購入や、作成、現役豚の引退などの管理を行います。<br>豚主になるには、まずはここのコマンドを実行してください。</font></td>'+tdr+'<a href="help/farm2.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table><br>';
+		msg+='<table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'メニュー</th>'+thc+'内容</th>'+thc+'実行</th></tr>';
+		for(i=0;i<6;i++){
+			if(eventflag[i]) msg+='<tr><td bgcolor=cccccc nowrap>'+farmmenu[i]+'</td><td bgcolor=cccccc>'+farmnaiyo[i]+'</td><td bgcolor=cccccc nowrap><a href="JavaScript:product('+i+')">実行</a></td></tr>';
+		}
+		msg+='</table>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 8:
+		msg+='<td bgcolor="#ff8080">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=red><font size=5 color=pink>特訓（現役豚のみ）</font><br><font size=2 color=white>さらなる能力アップを目指すなら特訓をしましょう。ただし同じ週にたくさん特訓をさせてはいけません。</font></td>'+tdr+'<a href="help/farm3.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table><br>';
+		msg+='<table border=0 cellPadding=1 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'メニュー</th>'+thc+'内容</th>'+thc+'効果</th>'+thc+'費用</th>'+thc+'実行</th></tr>';
+		for(i=6;i<31;i++){
+			if(eventflag[i]){
+				msg+='<tr>'+tdc+farmmenu[i]+'</td>'+tdc+farmnaiyo[i]+'</td>'+tdc+farmpower[i]+'</td>'+tdr;
+				if(farmmoney[i]<0) msg+="+";
+				msg+=Math.abs(farmmoney[i])+'</td>'+tdc+'<a href="JavaScript:training('+i+')">特訓</td></tr>';
+			}
+		}
+		if(eventflag[59]){
+			msg+='<tr>'+tdc+farmmenu[59]+'</td>'+tdc+farmnaiyo[59]+'</td>'+tdc+farmpower[59]+'</td>'+tdr;
+			msg+=farmmoney[59]+'</td>'+tdc+'<a href="JavaScript:training(59)">特訓</td></tr>';
+		}
+		msg+='</table>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 9:
+		msg+='<td bgcolor="#88ccf2">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=blue><font size=5 color=88ccf2>おやつ（現役豚のみ）</font><br><font size=2 color=white>おやつで体力回復させましょう。やる気や能力がアップすることもあります。ただし食べ過ぎには注意。</font></td>'+tdr+'<a href="help/farm4.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table><br>';
+		msg+='<table border=0 cellPadding=1 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'メニュー</th>'+thc+'内容</th>'+thc+'効果</th>'+thc+'費用</th>'+thc+'実行</th></tr>';
+		for(i=31;i<46;i++){
+			if(eventflag[i]) msg+='<tr>'+tdc+farmmenu[i]+'</td>'+tdc+farmnaiyo[i]+'</td>'+tdc+farmpower[i]+'</td>'+tdr+farmmoney[i]+'</td>'+tdc+'<a href="JavaScript:training('+i+')">おやつ</td></tr>';
+		}
+		msg+='</table>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 10:
+		msg+='<td bgcolor="#90f090">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=green><font size=5 color=90f090>療養（親豚・現役豚）</font><br><font size=2 color=white>２週間休ませて体力回復させます。おやつよりも効果大ですが、療養中は豚に指示を出せません。<br>親豚にも老化を遅らせる効果があります。</font></td>'+tdr+'<a href="help/farm5.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table><br>';
+		msg+='<table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'メニュー</th>'+thc+'内容</th>'+thc+'効果</th>'+thc+'費用</th>'+thc+'実行</th></tr>';
+		for(i=46;i<52;i++){
+			if(eventflag[i]) msg+='<tr>'+tdc+farmmenu[i]+'</td>'+tdc+farmnaiyo[i]+'</td>'+tdc+farmpower[i]+'</td>'+tdr+farmmoney[i]+'</td>'+tdc+'<a href="JavaScript:training('+i+')">療養</td></tr>';
+		}
+		msg+='</table>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 11:
+		msg+='<td bgcolor="#ffc0ff">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=magenta><font size=5 color=ffc0ff>装備（現役豚のみ）</font><br><font size=2 color=white>装飾品をつけることで、能力がアップします。顔につけるものと足にはくものの2タイプがあります。<br>一度装備すると一生はずす事ができないので、選択は慎重に…。</font></td>'+tdr+'<a href="help/farm6.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table><br>';
+		msg+='<table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'メニュー</th>'+thc+'内容</th>'+thc+'効果</th>'+thc+'費用</th>'+thc+'実行</th></tr>';
+		for(i=52;i<58;i++){
+			if(eventflag[i]) msg+='<tr>'+tdc+farmmenu[i]+'</td>'+tdc+farmnaiyo[i]+'</td>'+tdc+farmpower[i]+'</td>'+tdr+farmmoney[i]+'</td>'+tdc+'<a href="JavaScript:training('+i+')">装備</td></tr>';
+		}
+		msg+='</table>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 12://装備改め能力チェック
+		msg+='<td bgcolor="#ffe0b0">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=f07c10><font size=5 color=ffe0b0>能力一覧</font><br><font size=2 color=white>持ち豚の能力一覧です。</font></td>'+tdr;
+		msg+='<a href="help/farm7.html" target="help"><img src="button_help.gif" alt="ヘルプ" border=0></a></td></tr></table><br>';
+		
+		msg+='<table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'</th>'+thc+'名前</th>'+thc+'脚<br>質</th>'+thc+'速<br>度</th>'+thc+'持<br>久</th>'+thc+'瞬<br>発</th>'+thc+'気<br>性</th>'+thc+'競<br>合</th>'+thc+'跳<br>躍</th>'+thc+'荒<br>天</th>'+thc+'体力</th>'+thc+'やる<br>気</th>'+thc+'性別</th>'+thc+'賞金</th>'+thc+'戦</th>'+thc+'勝</th></tr>';
+		for(i=0;i<12;i++){
+			if(ownertype[i]>0){
+				msg+='<tr>'+thc+(i+1)+'</th>'+tdc+ownerpig[i]+'</td>'+tdc+ashi[eval(ownerpow[i].substring(14,15))]+'</td>'+tdc;
+				msg+=power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(0,2)-50)/2.5),0)]+'</td>'+tdc;//速
+				msg+=power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(2,4)-50)/2.5),0)]+'</td>'+tdc;//持
+				msg+=power_rank[Math.floor(eval(ownerpow[i].substring(4,6))/2.5)]+'</td>'+tdc;//瞬
+				msg+=power_rank[Math.floor(eval(50-ownerpow[i].substring(6,8))/2.5)]+'</td>'+tdc;//気
+				msg+=power_rank[Math.floor(eval(ownerpow[i].substring(8,10))/5)]+'</td>'+tdc;//競
+				msg+=power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(10,12)-50)/2.5),0)]+'</td>'+tdc;//跳
+				msg+=power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(12,14)-50)/2.5),0)]+'</td>'+tdc;//荒
+				msg+=Math.min(ownerpow[i].substring(15,18),99)+'</td>'+tdc+ownerpow[i].substring(18,20)+'</td>'+tdc+parent.track.butatype[ownertype[i]];
+				//豚グレードを記述
+				var earnmoney=eval(ownerwin[i].substring(0,2))*10000+eval(ownerwin[i].substring(2,4))*100+eval(ownerwin[i].substring(4,6));
+				if(ownertype[i]>2){
+					if(earnmoney>=1000) msg+=" G1";
+					else{
+						if(earnmoney>=400) msg+=" G2";
+						else msg+=" G3";
+					}
+				}
+				msg+='</td>'+tdr+ownerwin[i].substring(0,6)+'</td>'+tdr+ownerwin[i].substring(6,8)+'</td>'+tdr+ownerwin[i].substring(8,10)+'</td>'+'</tr>';
+			}
+		}
+		msg+='</table>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	case 13://オッズ一覧
+		msg+='<td bgcolor="#ffe0b0">';//背景テーブル
+		msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=f07c10><font size=5 color=ffe0b0>オッズ</font>　<font size=-1 color=white>上段・豚連　下段・ワイド</td></tr></table><br>';
+		msg+='<table border=0 cellPadding=1 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'豚</th><th bgcolor=pink align=center>単</th><th bgcolor=ffdead align=center>複</th>';
+		for(i=2;i<13;i++) msg+='<th bgcolor=90f090 align=center>'+i+'</th>';
+		for(i=0;i<12;i++){
+			odds=kitaitotal/kitai[i];
+			if(bet_form[i]>100 && raceflag) odds-=odds*(Math.sqrt(bet_form[i])/1000);//オッズ変動
+			odds=Math.max(Math.floor(odds*10)/10,1);
+			if(odds%1==0) odds+=0.1;//単勝
+			msg+='<tr><th bgcolor='+wakucolor[Math.floor(i/2)]+'>'+(i+1)+'</td><td bgcolor=pink align=right>'+odds+'</td>';
+			odds=kitaitotal/kitai[i];
+			odds=odds/3;
+			if(bet_form[i+12]>100 && raceflag) odds-=odds*(Math.sqrt(bet_form[i+12])/1000);//オッズ変動
+			odds=Math.max(Math.floor(odds*10)/10,1);
+			if(odds%1==0) odds+=0.1;//複勝
+			msg+='<td bgcolor=ffdead align=right>'+odds+'</td>';
+			
+			for(j=1;j<12;j++){
+				if(j>=i){
+					if(j==i){
+						msg+='<th bgcolor=90f090 align=center>'+(i+1)+'</th>';
+					}
+					else{
+						odds=(kitaitotal*kitaitotal)/(kitai[i]*kitai[j]*5);
+						haitou=-1;
+						for(k=0;k<Math.min(i,j);k++) haitou+=10-k;
+						haitou+=Math.max(i,j);
+						if(bet_form[haitou+45]>100 && raceflag) odds-=odds*(Math.sqrt(bet_form[i+45])/1000);//オッズ変動
+						odds=Math.max(Math.floor(odds*10)/10,1);
+						if(odds%1==0) odds+=0.1;//豚
+						msg+='<td bgcolor=90f090 align=right>'+odds+'<br>';
+						odds=(kitaitotal*kitaitotal)/(kitai[i]*kitai[j]*5);
+						odds=odds/Math.log(odds);
+						haitou=-1;
+						for(k=0;k<Math.min(i,j);k++) haitou+=10-k;
+						haitou+=Math.max(i,j);
+						if(bet_form[haitou+111]>100 && raceflag) odds-=odds*(Math.sqrt(bet_form[i]+111)/1000);//オッズ変動
+						odds=Math.max(Math.floor(odds*10)/10,1);
+						if(odds%1==0) odds+=0.1;//ワ
+						msg+=odds+'</td>';
+					}
+				}
+				else{
+					if(i>=5 && i<=10){
+						if(j==1) msg+='<th bgcolor=88ccf2 align=center>枠'+(i-4)+'</th>';
+						else{
+							if(j<i-2){
+								if(i-5==j-2) odds=(kitaitotal*kitaitotal)/(kitai[(j-2)*2]*kitai[(j-2)*2+1]*5);
+								else odds=(kitaitotal*kitaitotal)/((kitai[(j-2)*2]+kitai[(j-2)*2+1])*(kitai[(i-4)*2-1]+kitai[(i-4)*2-2])*5);
+								haitou=0;
+								for(k=0;k<Math.min(i-5,j-2);k++) haitou+=5-k;
+								haitou+=Math.max(i-5,j-2);
+								if(bet_form[haitou+24]>100 && raceflag) odds-=odds*(Math.sqrt(bet_form[i]+24)/1000);//オッズ変動
+								odds=Math.max(Math.floor(odds*10)/10,1);
+								if(odds%1==0) odds+=0.1;//枠
+								msg+='<td bgcolor=88ccf2 align=right>'+odds+'</td>';
+							}
+							else msg+=tdr+'</td>';
+						}
+					}
+					else{
+						if(i==11 && j>1 && j<=7) msg+='<th bgcolor=88ccf2 align=center>枠<br>'+(j-1)+'</th>';
+						else msg+=tdr+'</td>';
+					}
+				}
+			}
+			msg+='</tr>';
+		}
+		msg+='</table>';
+		msg+='<br></td>';//背景テーブル
+		break;
+	default:break;
+	}
+	msg+='</tr></table>';
+	if(outputwin){
+		//開いていたら閉じる
+		 if(!sbwin_closed(othernews)) othernews.close();
+		othernews=window.open("","otherwin","innerWidth=630,menubar=no,toolbar=no,scrollbars=yes,resizable=yes");
+		othernews.document.write(msg);
+	}
+	else outputLAYER("info",msg);
+}
+
+var entrynum=new Array(12);//出走する豚の番号 0～99:CPU 100～105:持ち豚
+var condition=new Array(12);//調子(0.8～1.2)
+var koten=0;//コース状態 0:良 1:やや重 2:重 3:不良
+
+function nextrace(){
+	if(nowyear!=1 || nowrace!=0) parent.track.rireki();//履歴表示
+	raceflag=false;
+	//海外招待取り消し
+	if(farmevent>=900 && farmevent<1000) farmevent=0;
+	//開いていたら閉じる
+	if(!sbwin_closed(othernews)) othernews.close();
+	//レイヤーの再表示
+	parent.track.outputLAYER("racetitle","");
+	parent.track.moveLAYER("racetitle",0,0);
+	parent.track.moveLAYER("r8",-200,0);
+	parent.track.moveLAYER("r4",-200,0);
+	parent.track.moveLAYER("r0",-200,0);
+	parent.track.moveLAYER("c45",-1000,0);
+	for(i=0;i<6;i++){
+		parent.track.moveLAYER("c0"+i,-1000,0);
+		parent.track.moveLAYER("c1"+i,-1000,0);
+		parent.track.moveLAYER("c2"+i,-1000,0);
+		parent.track.moveLAYER("c3"+i,-1000,0);
+	}
+	
+	moveLAYER("racebutton",-300,10);
+	moveLAYER("status",10,10);
+	for(i=0;i<6;i++){
+		b="s"+(i+1);
+		parent.track.moveLAYER(b,-200,60);
+	}
+	
+	for(i=0;i<177;i++) bet_form[i]=0;//ベット数
+	var yaruki;
+	var tairyoku;
+	var rouka;
+	for(i=0;i<12;i++){
+		b="buta"+(i+1);
+		parent.track.moveLAYER(b,-200,0);//豚の移動
+		tokkunnum[i]=0;
+		//持ち豚がレースをしたときは解除
+		if(butaname[100+i]>=0){}
+		else{
+			butaname[100+i]=999;
+			butapow[100+i]="";
+		}
+		
+		yaruki=eval(ownerpow[i].substring(18,20));
+		tairyoku=eval(ownerpow[i].charAt(15))*100+eval(ownerpow[i].substring(16,18));
+		rouka=eval(ownerpow[i].charAt(20))*100+eval(ownerpow[i].substring(21,23));
+		
+		//やる気・老化の変化 療養中はやる気減らない
+		//やるきダウン＝5+体力/10
+	  if(ownertype[i]>2 && butaname[100+i]==999 && eval(ownerwin[i].substring(12,13))==0){
+			a=Math.min(Math.floor(tairyoku/10),9);
+			ownerpowup(i,0,0,0,0,0,0,0,0,-14+a,0,0,0);
+		}
+		if(ownertype[i]>0) ownerpowup(i,0,0,0,0,0,0,0,0,0,1,0,0);
+		
+		//イベントフラグチェック
+		if(farmevent==0 && ownertype[i]>2){
+			if(eval(ownerwin[i].substring(12,13))==0 && butaname[100+i]==999){
+				if(Math.random()<0.05 && mymoney>300) farmevent=800+i;
+				if(eval(ownerwin[i].substring(8,10))>0 && Math.random()<0.08) farmevent=500+i;
+				if(eval(ownerwin[i].substring(8,10))>1 && Math.random()<0.05) farmevent=600+i;
+				if(eval(ownerwin[i].substring(0,2))*10000+eval(ownerwin[i].substring(2,4))*1000>1000 && eval(ownerwin[i].substring(8,10))>1 && Math.random()<0.08) farmevent=700+i;
+			}
+			if(tairyoku<60 && !eventflag[39]) farmevent=39;
+			if(tairyoku<50 && !eventflag[19]) farmevent=19;
+			if(tairyoku<40 && !eventflag[49]) farmevent=49;
+			if(yaruki<60 && !eventflag[48]) farmevent=48;
+			if(yaruki<50 && !eventflag[40]) farmevent=40;
+			if(yaruki<40 && !eventflag[42]) farmevent=42;
+			if(tairyoku<60 && yaruki<60 && !eventflag[50]) farmevent=50;
+		}
+		//強制フラグ
+		if(ownertype[i]>0 && butaname[100+i]==999){
+			if(yaruki<40 && Math.random()*50>yaruki) farmevent=100+i;//脱走
+			if(tairyoku<50 && Math.random()*60>tairyoku) farmevent=200+i;//病気
+			if(tairyoku>130 && Math.random()*30>150-tairyoku) farmevent=300+i;//腹痛
+			if(rouka>150 && Math.random()*50>200-rouka) farmevent=400+i;//死亡
+		}
+		//療養中の豚
+		if(eval(ownerwin[i].substring(12,13))>0){
+		  ownerwin[i]=ownerwin[i].substring(0,12)+(eval(ownerwin[i].substring(12,13))-1);
+		}
+	}
+	nowrace++;
+	if(nowrace==52){
+		nowyear++;
+		nowrace=0;
+		//履歴の削除
+		for(i=0;i<52;i++){
+			todaykoten[i]=4;
+			todaywin[i]="－－－";
+			todayqui[i]="－";
+		}
+		//清算
+		alert("前年の結果\n\n開始時持ち点："+startmoney+"\n終了時持ち点："+mymoney+"\n利益："+(mymoney-startmoney));
+		startmoney=mymoney;//基本点の設定
+		if(nowyear%8==0) farmevent=1000;//火事
+	}
+	
+	moveLAYER("bt_race",10,50);
+	moveLAYER("menubutton",220,10);
+	//海外招待の抽選
+	if(nowrace%13==8){
+		var entryshikaku=new Array(12);//海外招待の資格
+		var entrypighere=false;//１頭でもいるとtrue
+		for(i=0;i<12;i++){
+			if(eval(ownerwin[i].substring(0,2))*10000+eval(ownerwin[i].substring(2,4))*100>3000 && eval(ownerwin[i].substring(10,12))>1 && ownertype[i]>2 && eval(ownerwin[i].substring(12,13))==0 && butaname[100+i]==999){
+				entryshikaku[i]=true;
+				entrypighere=true;
+			}
+			else entryshikaku[i]=false;
+		}
+		if(entrypighere){//複数頭いる場合誰を出すか？
+			var maxmoney=0;
+			var entrypig=0;
+			for(i=0;i<12;i++){
+				if(eval(ownerwin[i].substring(0,2))*10000+eval(ownerwin[i].substring(2,4))*100>maxmoney && entryshikaku[i]){
+					maxmoney=eval(ownerwin[i].substring(0,2))*10000+eval(ownerwin[i].substring(2,4))*100;
+					entrypig=i;
+				}
+			}
+			farmevent=900+entrypig;
+		}
+	}
+	
+	//出走豚選出
+	var temp_array=new Array(30);
+	if(r_grade[nowrace]==0){//W1
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,12);
+		for(i=0;i<10;i++) entrynum[i]=temp_array[i];//特Aランクから10頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<2;i++) entrynum[i+10]=temp_array[i]+12;//Aから2頭
+	}
+	if(r_grade[nowrace]==1){//NC
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,12);
+		for(i=0;i<7;i++) entrynum[i]=temp_array[i];//特Aランクから7頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<3;i++) entrynum[i+7]=temp_array[i]+12;//Aから3頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<2;i++) entrynum[i+10]=temp_array[i]+41;//Bから2頭
+	}
+	if(r_grade[nowrace]==2){//有豚
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,12);
+		for(i=0;i<5;i++) entrynum[i]=temp_array[i];//特Aから5頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<5;i++) entrynum[i+5]=temp_array[i]+12;//Aから5頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<2;i++) entrynum[i+10]=temp_array[i]+41;//Bから2頭
+	}
+	if(r_grade[nowrace]==3){//ダービー
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,12);
+		for(i=0;i<2;i++) entrynum[i]=temp_array[i];//特Aから2頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<6;i++) entrynum[i+2]=temp_array[i]+12;//Aから6頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<4;i++) entrynum[i+8]=temp_array[i]+41;//Bから4頭
+	}
+	if(r_grade[nowrace]==4){//皇宝菊
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,12);
+		entrynum[0]=temp_array[0];//特Aから1頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<5;i++) entrynum[i+1]=temp_array[i]+12;//Aから5頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<5;i++) entrynum[i+6]=temp_array[i]+41;//Bから5頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,30);
+		entrynum[11]=temp_array[1]+70;//Cから1頭
+	}
+	if(r_grade[nowrace]==5){//その他G1
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,12);
+		entrynum[0]=temp_array[0];//特Aから1頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<3;i++) entrynum[i+1]=temp_array[i]+12;//Aから3頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<6;i++) entrynum[i+4]=temp_array[i]+41;//Bから6頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,30);
+		for(i=0;i<2;i++) entrynum[i+10]=temp_array[i]+70;//Cから2頭
+	}
+	if(r_grade[nowrace]==6){//G2
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<3;i++) entrynum[i]=temp_array[i]+12;//Aから3頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<5;i++) entrynum[i+3]=temp_array[i]+41;//Bから5頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,30);
+		for(i=0;i<4;i++) entrynum[i+8]=temp_array[i]+70;//Cから4頭
+	}
+	if(r_grade[nowrace]==7){//G3
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		entrynum[0]=temp_array[0]+12;//Aから1頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,29);
+		for(i=0;i<3;i++) entrynum[i+1]=temp_array[i]+41;//Bから3頭
+		for(i=0;i<30;i++) temp_array[i]=i;
+		shuffle(temp_array,30);
+		for(i=0;i<8;i++) entrynum[i+4]=temp_array[i]+70;//Cから8頭
+	}
+	//ここで、持ち豚が出走登録していれば、上書きする
+	for(i=0;i<12;i++){
+		if(butaname[100+i]==nowrace){
+			butaname[100+i]=ownerpig[i];
+			butapow[100+i]=ownerpow[i].substring(0,15);
+			entrynum[i]=100+i;
+		}
+	}
+	
+	shuffle(entrynum,12);//もう一度シャッフル
+	
+	//調子決定
+	for(i=0;i<12;i++){
+		if(entrynum[i]<100){//CPU豚の調子決定(ランダム)
+			//気性の抽出
+			var temp_int=0;
+			temp_int=eval(butapow[entrynum[i]].substring(6,8));
+			condition[i]=Math.floor(100+temp_int/2-Math.random()*temp_int)/100;
+		}
+		else{//持ち豚の調子決定
+			//気性の抽出
+			var temp_int=0;
+			temp_int=eval(butapow[entrynum[i]].substring(6,8));
+			condition[i]=Math.floor(90+temp_int/2-Math.random()*temp_int)/100;
+			if(eval(ownerpow[entrynum[i]-100].substring(18,20))>80)//やる気を考慮
+				condition[i]+=((eval(ownerpow[entrynum[i]-100].substring(18,20))-80)/100);
+			if(eval(ownerpow[entrynum[i]-100].substring(20,22))>12)//老化度を考慮
+				condition[i]-=((eval(ownerpow[entrynum[i]-100].substring(21,23))-20)/100);
+		}
+	}
+	//天候決定
+	var i=Math.random()*10;
+	if(i<5) koten=0;//良
+	else{if(i<7) koten=1;//稍重
+	else{if(i<9) koten=2;//重
+	else koten=3;//不良
+	}}
+	
+	countkitai();
+	if(nowyear!=1 || nowrace!=0) trackmenu(0,false);//新聞表示
+	output_status();
+}
+
+function countkitai(){
+	//期待値計算
+	kitaitotal=0;
+	//期待指数の演算
+	//期待指数＝(スピード-50)^2＋(スタミナ-50*距離/2)^1＋悪路*荒天
+	for(i=0;i<12;i++){
+		kitai[i]=Math.pow(Math.max(eval(butapow[entrynum[i]].substring(0,2))-50,0),2)+Math.pow(Math.max((eval(butapow[entrynum[i]].substring(2,4))-50),0)*r_kyori[nowrace]/2,1)+eval(butapow[entrynum[i]].substring(12,14))*koten;
+		kitai[i]=Math.max(kitai[i],1);
+		kitaitotal+=kitai[i];
+		cmnt[i]=Math.floor(Math.random()*100)/100;//コメント用乱数
+	}
+	
+	//予想屋
+	var max=0;
+	var yosou=new Array(12);
+	for(i=0;i<12;i++) mark[i]="";
+	var marksample=new Array("◎","○","▲","△","△","－","－","－","－","－","－","－");
+	var tokitamaninki=new Array(12);
+	for(h=0;h<4;h++){
+		for(i=0;i<12;i++){
+			if(h==0) yosou[i]=Math.pow(eval(butapow[entrynum[i]].substring(0,2)),2)*2+eval(butapow[entrynum[i]].substring(2,4));//スピード重視
+			if(h==1) yosou[i]=Math.pow(eval(butapow[entrynum[i]].substring(0,2)),2)*1.7+Math.pow(eval(butapow[entrynum[i]].substring(2,4)),2);//スタミナ重視
+			if(h==2) yosou[i]=Math.pow(eval(butapow[entrynum[i]].substring(0,2)),2)*1.5+Math.pow(eval(butapow[entrynum[i]].substring(8,10)),2);//競り合い重視
+			if(h==3) yosou[i]=Math.pow(eval(butapow[entrynum[i]].substring(0,2)),2)*1.3+Math.pow(eval(butapow[entrynum[i]].substring(12,14)),2);//荒天適正重視
+		}
+		for(j=0;j<12;j++){
+			for(i=0;i<12;i++){
+				if(yosou[max]<yosou[i]) max=i;
+			}
+			//if(h==0 && j==0) ninki=max;//h=0のとき、ほぼオッズ順
+			mark[max]+=marksample[j];
+			if(h==0) tokitamaninki[j]=max;
+			yosou[max]=0;max=0;
+		}
+	}
+	//記事
+	odds=Math.floor(kitaitotal/kitai[tokitamaninki[0]]);
+	tokitamaa=0;tokitamab=0;//ずばり予想
+	if(odds<7){
+		tokitamaa=1;
+		tokitamab=Math.floor(Math.random()*2+2);
+		
+		if(odds<4) tokitama="１番人気の";
+		else tokitama="人気が高い";
+		tokitama+=butaname[entrynum[tokitamaninki[0]]]+"だが、";
+		
+		if(r_kyori[nowrace]>20 && eval(butapow[entrynum[tokitamaninki[0]]].substring(2,4))<65)
+			tokitama+="スタミナが無く、距離が向いていない。今回は見送り。";
+		else{if(koten>1&& eval(butapow[entrynum[tokitamaninki[0]]].substring(12,14))<60)
+			tokitama+="悪路が苦手なため、今回はてこずりそう。";
+		else{if(r_course[nowrace]>9 && eval(butapow[entrynum[tokitamaninki[0]]].substring(10,12))<60)
+			tokitama+="障害コースより通常コースのほうが向いている。このレースではどうか。";
+		else{
+			if(history[entrynum[tokitamaninki[0]]]!="－－－"){
+				padohis=history[entrynum[tokitamaninki[0]]].split("_");
+				if(padohis[2]>6) tokitama+="前走の結果が悪い。今回も期待できないだろう。";
+				else{
+					tokitama+="特に問題も見つからず、順当に勝ち進むだろう。";
+					tokitamaa=0;
+					tokitamab=Math.floor(Math.random()*2+1);
+					if(kitaitotal/kitai[tokitamaninki[1]]<8){
+						tokitama+="このレースは荒れない。";
+						tokitamab=1;
+					}
+ 					else tokitama+="２着争いが問題だが。";
+				}
+			}
+		else{
+			tokitama+="特に問題も見つからず、順当に勝ち進むだろう。";
+			tokitamaa=0;
+			tokitamab=Math.floor(Math.random()*2+1);
+			if(kitaitotal/kitai[tokitamaninki[1]]<8){
+				tokitama+="このレースは荒れない。";
+				tokitamab=1;
+			}
+			else tokitama+="２着争いが問題だが。";
+		}
+		}}}
+	}
+	else{
+		tokitamaa=Math.floor(Math.random()*3+1);
+		tokitamab=Math.floor(Math.random()*3+2);
+		tokitama="人気が割れており、レースは大荒れの予感。ここはあえて"+butaname[entrynum[tokitamaninki[tokitamaa]]]+"を推したい。";
+	}
+	if(tokitamaa==tokitamab) tokitamab++;
+	if(tokitamaninki[tokitamaa]>tokitamaninki[tokitamab])
+		{i=tokitamaa;tokitamaa=tokitamab;tokitamab=i;}
+	tokitama+='<br> <font size=+2>'+(tokitamaninki[tokitamaa]+1)+' － '+(tokitamaninki[tokitamab]+1)+'</font> だ。</td> </tr>';
+	parent.track.butaload();//パドック表示
+	
+}
+
+function getboxcount(m){
+	var count=0;
+	for(i=m;i<m+12;i++){
+		if(document.all){
+			if(document.betform.elements[i].checked) count++;
+		}
+		if(document.layers){
+			if(document.layers.test.document.betform.elements[i].checked) count++;
+		}
+	}
+	return count;
+}
+
+function boxcheck(n){
+	var boxcount=getboxcount(n);
+	var pattern=0;//ボックスの組み合わせ
+	if(boxcount<2) pattern=0;
+	else pattern=(boxcount*(boxcount-1))/2;
+	
+	if(document.all) document.betform.elements[n+12].value=pattern;
+	if(document.layers) document.layers.test.document.betform.elements[n+12].value=pattern;
+}
+
+function boxbet(n,type){//type2:qui type3:wide
+	var bb=0;//Box Bet
+	var betNo=0;
+	var boxcount=getboxcount(n);
+	if(document.all) bb=document.betform.elements[n+13].value;
+	if(document.layers) bb=document.layers.test.document.betform.elements[n+66+13].value;
+	
+	
+	if(bb=="") bb=0;
+	if(boxcount>1){
+		if(parseInt(bb)>0 && mymoney>=parseInt(bb)*((boxcount*(boxcount-1))/2)){
+			mymoney-=parseInt(bb)*(boxcount*(boxcount-1))/2;
+			for(i=0;i<11;i++){
+				for(j=i+1;j<12;j++){
+					if(document.all){
+						if(document.betform.elements[n+i].checked && document.betform.elements[n+j].checked){
+							if(type==2) bet_form[betNo+45]+=Math.floor(bb);//豚
+							else bet_form[betNo+111]+=Math.floor(bb);//ワ
+							//document.betform.elements[n-66+betNo].value=bet_form[n-66+betNo-15];
+						}
+					}
+					if(document.layers){
+						if(document.layers.test.document.betform.elements[n+i].checked && document.layers.test.document.betform.elements[n+i].checked){
+							bet_form[n-66+betNo-15]+=parseInt(bb);
+							document.layers.test.document.betform.elements[n-66+betNo].value=bet_form[n-66+betNo-15];
+						}
+					}
+					betNo++;
+				}
+			}
+			output_status();
+			alert("ボックスベットしました。\n\n"+Math.floor(bb)+" × "+((boxcount*(boxcount-1))/2)+"通り＝"+(Math.floor(bb)*(boxcount*(boxcount-1))/2)+"pts");
+			trackmenu(type+1,false);//新聞表示
+		}
+		
+		else{
+			alert("入力値が不正です");
+		}
+	}
+	else alert("２ヶ所以上チェックしてください");
+}
+
+
+function moneyout(i,a){//i:ベット番号　a:フォームの内容
+	moneybet=a.value
+	if(moneybet=="") moneybet=0;
+	if(parseInt(moneybet)>=0 && mymoney>=parseInt(moneybet)){
+		moneybet=Math.floor(moneybet);
+		mymoney-=parseInt(moneybet)-bet_form[i];
+		bet_form[i]=parseInt(moneybet);
+		a.value=parseInt(moneybet);
+	}
+	else{
+		alert("入力値が不正です");
+		a.value=bet_form[i];
+	}
+	//出力
+	output_status();
+}
+
+function gorace(){
+	raceflag=true;
+	//コースレイアウト
+	for(i=0;i<6;i++){
+		a=r_course[nowrace];
+		if(a>9) a-=10;
+		switch(course_layout[a*6+i]){
+			case 0:
+				parent.track.moveLAYER("c0"+i,i*300,0);
+				break;
+			case 1:
+				parent.track.moveLAYER("c1"+i,i*300,0);
+				break;
+			case 2:
+				parent.track.moveLAYER("c2"+i,i*300,0);
+				break;
+			case 3:
+				parent.track.moveLAYER("c3"+i,i*300,0);
+				break;
+			case 4:
+				parent.track.moveLAYER("c45",1500,0);
+				break;
+		}
+	}
+	//レース番号から月週を求める
+	var month=0;
+	var week=0;
+	if((nowrace+1)%13==0){//5週目の処理
+		month=Math.floor((nowrace+1)/13)*3;
+		week=5;
+	}
+	else{
+		month=Math.floor(nowrace/13)*3+Math.floor(nowrace%13/4)+1;
+		week=Math.floor(nowrace%13%4)+1;
+	}
+	msg='<table border=0><tr><td bgcolor=yellow rowspan=4>';
+	if(r_grade[nowrace]<6){
+		if(r_grade[nowrace]<5){
+			if(nowrace==12) msg+="砂漠の過酷なレースを制するのはどの豚か。";//ピラミッド
+			if(nowrace==16) msg+="長距離豚の頂点を決める、";//春皇
+			if(nowrace==20) msg+="競豚界で最も権威あるレースのひとつ、";//ダービー
+			if(nowrace==24) msg+="上半期最強はどの豚か。";//宝塚南
+			if(nowrace==25) msg+="障害レースの世界一が決まります。";//長城杯
+			if(nowrace==38) msg+="リゾート地での泥沼の戦い。";//トロピ
+			if(nowrace==41) msg+="秋に咲く豚はどの豚か。";//菊科
+			if(nowrace==42) msg+="すっかり秋らしくなってきた新宿競豚場です。";//秋皇
+			if(nowrace==46) msg+="世界中の強豪が集まりました。";//ニホン
+			if(nowrace==50) msg+="今年１年の締めくくり。";//有豚
+			if(nowrace==51) msg+="本当に強い豚が今決まります。";//エッフェル
+			msg+="<br>";
+		}
+		msg+=r_name[nowrace]+"、";
+	}
+	msg+='まもなく出走です。</td><td bgcolor="#ADD8E6">'+nowyear+'年目 '+month+'月 '+week+'週　　</td></tr><tr><td bgcolor="#FFB6C1">　　'+mymoney+' pts　　</td></tr><tr><td><a href="JavaScript:parent.track.racedash();">高速モード</a></td></tr></table>'
+	outputLAYER("status",msg);
+	moveLAYER("status",130,10)
+	moveLAYER("racebutton",10,10);
+	moveLAYER("bt_race",0,-100);
+	moveLAYER("menubutton",0,-100);
+	trackmenu(0,false);
+	//豚レイアウト
+	for(i=0;i<12;i++){
+		b="buta"+(i+1);
+		parent.track.moveLAYER(b,1710-r_kyori[nowrace]*50,i*5+60);//豚40pxを考慮
+	}
+	parent.track.moveLAYER("r8",1330,30);
+	if(course_layout[a*6+5]==4){//坂あり
+		parent.track.moveLAYER("r4",1530,20);
+		parent.track.moveLAYER("r0",1730,0);
+	}
+	else{
+		parent.track.moveLAYER("r4",1530,30);
+		parent.track.moveLAYER("r0",1730,30);
+	}
+	parent.track.scroll(1660-r_kyori[nowrace]*50,0);
+	if(r_grade[nowrace]==0){
+		if(nowrace==12) parent.track.moveLAYER("w0",1800-r_kyori[nowrace]*50,40);
+		if(nowrace==25) parent.track.moveLAYER("w1",1800-r_kyori[nowrace]*50,40);
+		if(nowrace==38) parent.track.moveLAYER("w2",1800-r_kyori[nowrace]*50,40);
+		if(nowrace==51) parent.track.moveLAYER("w3",1800-r_kyori[nowrace]*50,40);
+	}
+	else{
+		parent.track.outputLAYER("racetitle","<table><tr><td align=center valign=top><img src='waku_left.gif'><font size=+2>G"+Math.max(r_grade[nowrace]-4,1)+"</font><img src='waku_right.gif'></td></tr><tr><td bgcolor="+grade_color[r_grade[nowrace]]+" align=center valign=top><font size=+3 color=00008b><nobr><i>"+r_name[nowrace]+"</i></nobr></font></td></tr><tr><td align=center valign=top><font size=+2>"+r_kyori[nowrace]+"m</font></td></tr></table>");
+		parent.track.moveLAYER("racetitle",1800-r_kyori[nowrace]*50,20);
+	}
+	//障害レイアウト
+	if(r_course[nowrace]>9){
+		for(i=0;i<6;i++){
+			b="s"+(i+1);
+			parent.track.moveLAYER(b,1500-i*140,60);
+		}
+	}
+	
+	parent.track.gorace();
+}
+
+
+function product(n){
+	pigsel=parent.track.selectn;
+	switch(n){
+		case 0://父
+			var msg="<table border=0 width=630><tr>";
+			msg+='<td bgcolor=cccccc>';//背景テーブル
+			msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=90C4C0><font size=5>'+farmmenu[n]+'</font><br><font size=2>購入する豚を選んでください。<br>↑上の「生産」をクリックすると戻ります。</font></td></tr></table><br>';
+			msg+='<table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'名前</th>'+thc+'脚質</th>'+thc+'速</th>'+thc+'持</th>'+thc+'瞬</th>'+thc+'気</th>'+thc+'競</th>'+thc+'跳</th>'+thc+'荒</th>'+thc+'費用</th>'+thc+'購入</th></tr>';
+			for(i=0;i<16;i++){
+				if(parentflag[i]){
+					msg+='<tr>'+tdc+parentname[i]+'</td>'+tdc+ashi[eval(parentpow[i].substring(14,15))]+'</td>'+tdc;
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(0,2)-50)/2.5),0)]+'</td>'+tdc;//速
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(2,4)-50)/2.5),0)]+'</td>'+tdc;//持
+					msg+=power_rank[Math.floor(eval(parentpow[i].substring(4,6))/2.5)]+'</td>'+tdc;//瞬
+					msg+=power_rank[Math.floor(eval(50-parentpow[i].substring(6,8))/2.5)]+'</td>'+tdc;//気
+					msg+=power_rank[Math.floor(eval(parentpow[i].substring(8,10))/5)]+'</td>'+tdc;//競
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(10,12)-50)/2.5),0)]+'</td>'+tdc;//跳
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(12,14)-50)/2.5),0)]+'</td>'+tdc;//荒
+
+					msg+=(i*20)+'</td>'+tdc+'<a href="JavaScript:buypig('+i+')">購入</td></tr>';
+				}
+			}
+			msg+='</table>';
+			msg+='<br></td>';//背景テーブル
+			msg+='</tr></table>';
+			outputLAYER("info",msg);
+			break;
+		case 1://母
+			var msg="<table border=0 width=630><tr>";
+			msg+='<td bgcolor=cccccc>';//背景テーブル
+			msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=90C4C0><font size=5>'+farmmenu[n]+'</font><br><font size=2>購入する豚を選んでください。<br>↑上の「生産」をクリックすると戻ります。</font></td></tr></table><br>';
+			msg+='<table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'名前</th>'+thc+'脚質</th>'+thc+'速</th>'+thc+'持</th>'+thc+'瞬</th>'+thc+'気</th>'+thc+'競</th>'+thc+'跳</th>'+thc+'荒</th>'+thc+'費用</th>'+thc+'購入</th></tr>';
+			for(i=16;i<32;i++){
+				if(parentflag[i]){
+					msg+='<tr>'+tdc+parentname[i]+'</td>'+tdc+ashi[eval(parentpow[i].substring(14,15))]+'</td>'+tdc;
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(0,2)-50)/2.5),0)]+'</td>'+tdc;//速
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(2,4)-50)/2.5),0)]+'</td>'+tdc;//持
+					msg+=power_rank[Math.floor(eval(parentpow[i].substring(4,6))/2.5)]+'</td>'+tdc;//瞬
+					msg+=power_rank[Math.floor(eval(50-parentpow[i].substring(6,8))/2.5)]+'</td>'+tdc;//気
+					msg+=power_rank[Math.floor(eval(parentpow[i].substring(8,10))/5)]+'</td>'+tdc;//競
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(10,12)-50)/2.5),0)]+'</td>'+tdc;//跳
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(12,14)-50)/2.5),0)]+'</td>'+tdc;//荒
+
+					msg+=((i-16)*20)+'</td>'+tdc+'<a href="JavaScript:buypig('+i+')">購入</td></tr>';
+				}
+			}
+			msg+='</table>';
+			msg+='<br></td>';//背景テーブル
+			msg+='</tr></table>';
+			outputLAYER("info",msg);
+			break;
+		case 2://現役
+			var msg="<table border=0 width=630><tr>";
+			msg+='<td bgcolor=cccccc>';//背景テーブル
+			msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=90C4C0><font size=5>'+farmmenu[n]+'</font><br><font size=2>購入する豚を選んでください。<br>↑上の「生産」をクリックすると戻ります。</font></td></tr></table><br>';
+			msg+='<table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'名前</th>'+thc+'脚質</th>'+thc+'速</th>'+thc+'持</th>'+thc+'瞬</th>'+thc+'気</th>'+thc+'競</th>'+thc+'跳</th>'+thc+'荒</th>'+thc+'性別</th>'+thc+'費用</th>'+thc+'購入</th></tr>';
+			for(i=32;i<48;i++){
+				if(parentflag[i]){
+					msg+='<tr>'+tdc+parentname[i]+'</td>'+tdc+ashi[eval(parentpow[i].substring(14,15))]+'</td>'+tdc;
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(0,2)-50)/2.5),0)]+'</td>'+tdc;//速
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(2,4)-50)/2.5),0)]+'</td>'+tdc;//持
+					msg+=power_rank[Math.floor(eval(parentpow[i].substring(4,6))/2.5)]+'</td>'+tdc;//瞬
+					msg+=power_rank[Math.floor(eval(50-parentpow[i].substring(6,8))/2.5)]+'</td>'+tdc;//気
+					msg+=power_rank[Math.floor(eval(parentpow[i].substring(8,10))/5)]+'</td>'+tdc;//競
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(10,12)-50)/2.5),0)]+'</td>'+tdc;//跳
+					msg+=power_rank[Math.max(Math.floor(eval(parentpow[i].substring(12,14)-50)/2.5),0)]+'</td>'+tdc;//荒
+
+					msg+=seibetu[eval(parentpow[i].substring(25,26))]+'</td>'+tdc+((i-32)*50+250)+'</td>'+tdc+'<a href="JavaScript:buypig('+i+')">購入</td></tr>';
+				}
+			}
+			msg+='</table>';
+			msg+='<br></td>';//背景テーブル
+			msg+='</tr></table>';
+			outputLAYER("info",msg);
+			break;
+		case 3://種付け
+			//父母存在チェック
+			var fubo=0;
+			var farmfull=true;//牧場満員チェック
+			for(i=0;i<12;i++){
+				if(ownertype[i]==1) fubo++;
+				if(ownertype[i]==2) fubo+=100;
+				if(ownertype[i]==0) farmfull=false;
+			}
+			
+			if(fubo>100 && !farmfull){
+				var msg="<table border=0 width=630><tr>";
+				msg+='<td bgcolor=cccccc align=center>';//背景テーブル
+				msg+='<br><table border=0 width=100% cellspacing=0><tr><td bgcolor=90C4C0><font size=5>'+farmmenu[n]+'</font><br><font size=2>父豚と母豚を選び、下表が交わる所の「決定」をクリックしてください。<br>↑上の「生産」をクリックすると戻ります。</font></td></tr></table><br>';
+				
+				msg+='<table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center width=100%><tr>'+thc+'父母</th>'+thc+'名前</th>'+thc+'脚質</th>'+thc+'速</th>'+thc+'持</th>'+thc+'瞬</th>'+thc+'気</th>'+thc+'競</th>'+thc+'跳</th>'+thc+'荒</th></tr>';
+				for(i=0;i<12;i++){
+					if(ownertype[i]==1){
+						msg+='<tr><td bgcolor=A8A8FF align=center>父</td>'+tdc+ownerpig[i]+'</td>'+tdc+ashi[eval(ownerpow[i].substring(14,15))]+'</td>'+tdc+power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(0,2)-50)/2.5),0)]+'</td>'+tdc+power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(2,4)-50)/2.5),0)]+'</td>'+tdc+power_rank[Math.floor(eval(ownerpow[i].substring(4,6))/2.5)]+'</td>'+tdc+power_rank[Math.floor(eval(50-ownerpow[i].substring(6,8))/2.5)]+'</td>'+tdc+power_rank[Math.floor(eval(ownerpow[i].substring(8,10))/5)]+'</td>'+tdc+power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(10,12)-50)/2.5),0)]+'</td>'+tdc+power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(12,14)-50)/2.5),0)]+'</tr>';
+					}
+				}
+				
+				for(i=0;i<12;i++){
+					if(ownertype[i]==2){
+						msg+='<tr><td bgcolor=A8A8FF align=center>母</td>'+tdc+ownerpig[i]+'</td>'+tdc+ashi[eval(ownerpow[i].substring(14,15))]+'</td>'+tdc+power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(0,2)-50)/2.5),0)]+'</td>'+tdc+power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(2,4)-50)/2.5),0)]+'</td>'+tdc+power_rank[Math.floor(eval(ownerpow[i].substring(4,6))/2.5)]+'</td>'+tdc+power_rank[Math.floor(eval(50-ownerpow[i].substring(6,8))/2.5)]+'</td>'+tdc+power_rank[Math.floor(eval(ownerpow[i].substring(8,10))/5)]+'</td>'+tdc+power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(10,12)-50)/2.5),0)]+'</td>'+tdc+power_rank[Math.max(Math.floor(eval(ownerpow[i].substring(12,14)-50)/2.5),0)]+'</tr>'					}
+				}
+				msg+='</table>';
+				msg+="<form name='pigname'><table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center><tr>"+tdc+"生まれてくる仔豚の名前を決定してください（全角９文字以内）<br><input type=text value='"
+				rndkobuta=new Array("カツメシ","ブタ","トンソク","ピッグ","ポーク","ヒヅメ","シッポ","ニクマン","ボンレス","チャシュ","ブリザード","フラッグ","マキシム","ドリーム","カフェ","オーカン","ソルジャー","レリーフ","シアター","ポケット");
+				msg+=rndkobuta[Math.floor(Math.random()*10)];
+				msg+=rndkobuta[Math.floor(Math.random()*10)+10];
+				msg+="'></td></tr></table></form>";
+				
+				msg+='<table border=0 cellPadding=3 cellSpacing=1 bgcolor=000000 align=center><tr><td></td>';//マトリックス
+				for(i=0;i<12;i++){
+					if(ownertype[i]==1) msg+='<th bgcolor=A8A8FF align=center>'+ownerpig[i].substring(0,4)+'</th>';
+				}
+				msg+='</tr>';
+				for(i=0;i<12;i++){
+					if(ownertype[i]==2){
+						msg+='<tr><th bgcolor=FF9898 align=center>'+ownerpig[i].substring(0,4)+'</th>';
+						for(j=0;j<12;j++){
+							if(ownertype[j]==1) msg+=tdc+'<a href="JavaScript:syussan('+(i*100+j)+')">'+'決定</a></td>';//母*100+父
+						}
+						msg+='</tr>';
+					}
+				}
+				msg+='</table>';
+				
+				msg+='<br></td></tr></table>';
+				outputLAYER("info",msg);
+			}
+			else{
+				if(farmfull) alert("これ以上牧場に豚を入れる事ができません。\n豚を売却してください。");
+				else alert("種付けには父豚と母豚がそれぞれ必要です。\n父豚と母豚を購入してください");
+			}
+			break;
+		case 4://引退
+			if(ownertype[pigsel]>2 && eval(ownerwin[pigsel].substring(12,13))==0 && butaname[100+pigsel]==999){
+				a=confirm(ownerpig[pigsel]+"を引退させ、親豚にしますか？");
+				if(a){
+					msg=ownerpig[pigsel];
+					msg+="は現役を引退しました。お疲れ様でした。\n\n今後は";
+					if(ownertype[pigsel]==3) msg+="父";
+					else  msg+="母";
+					msg+="豚として子孫繁栄に勤めます。\n\n";
+					//豚の成績を見る
+					msg+=ownerpig[pigsel]+" の成績\n";
+					msg+=eval(ownerwin[pigsel].substring(6,8))+" 戦 "+eval(ownerwin[pigsel].substring(8,10))+" 勝\n";
+					msg+="G1 ： "+eval(ownerwin[pigsel].substring(10,12))+"勝\n";
+					kakutoku=(eval(ownerwin[pigsel].substring(0,2))*10000+eval(ownerwin[pigsel].substring(2,4))*100+eval(ownerwin[pigsel].substring(4,6)));
+					msg+="獲得賞金 ： "+kakutoku;
+					msg+="\n養育費 ： "+youiku[pigsel];
+					msg+="\n利益 ： "+(kakutoku-youiku[pigsel]);
+					alert(msg);
+					ownertype[pigsel]-=2;
+					parent.track.selectpig(pigsel);
+				}
+			}
+			else{
+				alert("そこには豚はいません（もしくは引退できません）。\n上で豚を選択してください。");
+			}
+			trackmenu(7,false);
+			output_status();
+			break;
+		case 5://売却
+			if(ownertype[pigsel]>0 && eval(ownerwin[pigsel].substring(12,13))==0 && butaname[100+pigsel]==999){
+				sellmoney=0;
+				if(ownertype[i]<3) sellmoney=(eval(ownerpow[pigsel].substring(0,2))-50)*5;
+				else sellmoney=(eval(ownerpow[pigsel].substring(0,2))-50)*10;
+				sellmoney=Math.max(0,sellmoney);
+				a=confirm(ownerpig[pigsel]+"の売値は "+sellmoney+" です。\n売却してもよろしいですか？");
+				if(a){
+					msg=ownerpig[pigsel];
+					msg+="は売却しました";
+					ownerpig[pigsel]="";
+					ownerpow[pigsel]="0000000000000000000000000";
+					ownertype[pigsel]=0;
+					ownerwin[pigsel]="0000000000000";
+					youiku[pigsel]=0;
+					mymoney+=sellmoney;
+					alert(msg);
+					parent.track.selectpig(pigsel);
+				}
+			}
+			else{
+				alert("そこには豚はいません。\n上で豚を選択してください。");
+			}
+			trackmenu(7,false);
+			output_status();
+			break;
+	}
+}
+
+function buypig(n){
+	if((n<32 && mymoney>=(n%16)*20) || (n>=32 && mymoney>=(n-32)*50+250)){
+		//厩舎の決定
+		for(i=0;i<12;i++){
+			if(ownertype[i]==0){
+				ownerpig[i]=parentname[n];
+				ownerpow[i]=parentpow[n];
+				ownertype[i]=Math.floor(n/32)*2+1+eval(ownerpow[i].substring(25,26));
+				if(n>=32){
+					ownerwin[i]="000"+(((n%16)+2)*50)+"0000000";
+					youiku[i]=((n%16)+1)*50+200;
+				}
+				else{
+					ownerwin[i]="0000000000000";
+					youiku[i]=0;
+				}
+				tokkunnum[i]=0;
+				parentflag[n]=false;
+				alert(parentname[n]+"を購入しました。\n"+(i+1)+"番の小屋に入れました。");
+				if(i>4 && farmevent==0 && !eventflag[58]) farmevent=1001;
+				//履歴の削除
+				history[100+i]="－－－";history[212+i]="－－－";
+				if(n<32) mymoney-=(n%16)*20;
+				else mymoney-=((n%16)+1)*50+200;
+				parent.track.selectpig(i);
+				trackmenu(7,false);
+				break;
+			}
+		}
+		output_status();
+	}
+	else alert("所持金が足りません");
+}
+
+function syussan(n){//父豚母豚決定
+	//IDの決定
+	papa=n%100;
+	mama=Math.floor(n/100);
+	
+	//性別の決定
+	//男女産み分け師がいる場合は選べる
+	if(eventflag[58]){
+		henji=confirm("「お久しぶりです。男女産み分け師です。仔豚の性別を選んでください。」\n\nＯＫ： 男\nキャンセル： 女");
+		if(henji) kobutaseibetu=3;
+		else kobutaseibetu=4;
+	}
+	else{
+		kobutaseibetu=Math.floor(Math.random()*2)+3;
+	}
+	
+	//名前の決定
+	msg="かわいい";
+	if(kobutaseibetu==3) msg+="男";
+	else msg+="女";
+	msg+="の仔豚が生まれました。\n";
+	kobutaname=document.pigname.elements[0].value;
+	msg+=kobutaname;
+	if(kobutaname!=null){
+		if(kobutaname.length<10 && isNaN(kobutaname)){
+			//パラメータの決定（遺伝）
+			var kobutaparam=new Array(0,0,0,0,0,0,0,0);
+			
+			//遺伝率（遺伝率－老化度のうちの150を越えた分）
+			for(i=0;i<2;i++){
+				if(i==0) oya=papa;
+				else oya=mama;
+				iden=eval(ownerpow[oya].substring(23,25));
+				if(eval(ownerpow[oya].substring(20,21))>0)
+					iden-=Math.max(eval(ownerpow[oya].substring(21,23))-50,0);
+				iden=iden/100;
+				if(kobutaseibetu==4-i) iden=iden/2;
+				kobutaparam[0]+=eval(ownerpow[oya].substring(0,2)-40)*iden;//速
+				kobutaparam[1]+=eval(ownerpow[oya].substring(2,4)-40)*iden;//持
+				kobutaparam[2]+=eval(ownerpow[oya].substring(4,6))*iden;//瞬
+				kobutaparam[3]+=eval(50-ownerpow[oya].substring(6,8))*iden;//気
+				kobutaparam[4]+=eval(ownerpow[oya].substring(8,10))*iden;//競
+				kobutaparam[5]+=eval(ownerpow[oya].substring(10,12)-30)*iden;//跳
+				kobutaparam[6]+=eval(ownerpow[oya].substring(12,14)-40)*iden;//荒
+			}
+			
+			kobutaparam[3]=50-kobutaparam[3];
+			for(i=0;i<7;i++){
+				kobutaparam[i]=Math.floor(Math.min(99,Math.max(kobutaparam[i],1)));
+				if(i<2 || i==6) kobutaparam[i]+=40;
+				if(i==5) kobutaparam[i]+=30;
+			}
+			
+			//脚質の決定
+			iden=Math.random();
+			if(iden<0.45) kobutaparam[7]=ownerpow[papa].substring(14,15);
+			else{
+				if(iden<0.9) kobutaparam[7]=ownerpow[mama].substring(14,15);
+				else kobutaparam[7]=Math.floor(Math.random()*4+1);
+			}
+			
+			for(i=0;i<12;i++){
+				if(ownertype[i]==0){
+					ownerpig[i]=kobutaname;
+					ownerpow[i]="";
+					for(j=0;j<8;j++){
+						kobutaparam[j]=Math.floor(kobutaparam[j]);
+						if(kobutaparam[j]<10 && j<7) ownerpow[i]+="0"+kobutaparam[j]+"";
+						else ownerpow[i]+=kobutaparam[j]+"";
+					}
+					ownerpow[i]+="1009900040"+(kobutaseibetu-3)+"00";
+					ownertype[i]=kobutaseibetu;
+					ownerwin[i]="0000000000000";
+					youiku[i]=0;
+					tokkunnum[i]=0;
+					//履歴の削除
+					history[100+i]="－－－";history[212+i]="－－－";
+					msg+=" は競争豚に登録され、"+(i+1)+"番の小屋に入りました。\n世界の頂点を目指して頑張ってください！";
+					alert(msg);
+					parent.track.selectpig(i);
+					if(i>4 && farmevent==0 && !eventflag[58]) farmevent=1001;
+					break;
+				}
+			}
+			//父母の老化度アップ
+			ownerpowup(papa,0,0,0,0,0,0,0,0,0,5,0,0);
+			ownerpowup(mama,0,0,0,0,0,0,0,0,0,5,0,0);
+			
+		}
+		else alert("この仔豚は競争豚として登録できません。\n文字数が長すぎるか、半角数字を含んでいます。");
+	}
+	else alert("競争豚の登録を取り消しました。");
+	
+	trackmenu(7,false);
+	output_status();
+}
+
+function ownerpowup(pigid,p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11){//パラメータの変動
+//　　　　　　　　　豚ID　速 持 瞬 気 競 跳 荒 体 や 老 遺　装
+	var powup=new Array(12);
+	for(i=0;i<12;i++){
+		eval("powup["+i+"]=p"+i);
+	}
+	for(i=0;i<12;i++){
+		if(i<7){
+			powup[i]=eval(ownerpow[pigid].substring(i*2,(i*2)+2))+powup[i];
+			//max,minの設定
+			if(i==2 || i==3) powup[i]=Math.min(49,Math.max(1,powup[i]));
+			else powup[i]=Math.min(99,Math.max(1,powup[i]));
+			powup[i]="00"+powup[i];
+			powup[i]=powup[i].substring((powup[i].length)-2,powup[i].length);
+		}
+		if(i==7){
+			powup[i]=eval(ownerpow[pigid].substring(15,16))*100+eval(ownerpow[pigid].substring(16,18))+powup[i];
+			powup[i]=Math.min(150,Math.max(0,powup[i]));
+			powup[i]="000"+powup[i];
+			powup[i]=powup[i].substring((powup[i].length)-3,powup[i].length);
+		}
+		if(i==8){
+			powup[i]=eval(ownerpow[pigid].substring(18,20))+powup[i];
+			powup[i]=Math.min(99,Math.max(0,powup[i]));
+			powup[i]="00"+powup[i];
+			powup[i]=powup[i].substring((powup[i].length)-2,powup[i].length);
+		}
+		if(i==9){
+			powup[i]=eval(ownerpow[pigid].substring(20,21))*100+eval(ownerpow[pigid].substring(21,23))+powup[i];
+			powup[i]=Math.min(200,Math.max(0,powup[i]));
+			powup[i]="000"+powup[i];
+			powup[i]=powup[i].substring((powup[i].length)-3,powup[i].length);
+		}
+		if(i==10){
+			powup[i]=eval(ownerpow[pigid].substring(23,25))+powup[i];
+			powup[i]=Math.min(60,Math.max(0,powup[i]));
+			powup[i]="00"+powup[i];
+			powup[i]=powup[i].substring((powup[i].length)-2,powup[i].length);
+		}
+		if(i==11){
+			powup[i]=eval(ownerpow[pigid].substring(26,28))+powup[i];
+			powup[i]="00"+powup[i];
+			powup[i]=powup[i].substring((powup[i].length)-2,powup[i].length);
+		}
+	}
+	buffer="";
+	for(i=0;i<7;i++) buffer+=powup[i]+"";
+	buffer+=ownerpow[pigid].substring(14,15);
+	for(i=7;i<11;i++) buffer+=powup[i]+"";
+	buffer+=ownerpow[pigid].substring(25,26);
+	buffer+=powup[11]+"";
+	ownerpow[pigid]=buffer;
+}
+
+function training(n){//特訓・おやつなど
+	pigsel=parent.track.selectn;
+	if(ownertype[pigsel]>0 && eval(ownerwin[pigsel].substring(12,13))==0 && butaname[100+pigsel]==999){
+	 if(mymoney>=farmmoney[n] || n==29 || n==30){
+	  if(ownertype[pigsel]>2 || (n>=46 && n<=51)){
+		//所持金の引き落とし
+		mymoney-=farmmoney[n];
+		youiku[pigsel]+=farmmoney[n];
+		//効果（基本UP*((やる気+50)/100)*(体力/100)）
+		var tai=eval(ownerpow[pigsel].substring(15,16))*100+eval(ownerpow[pigsel].substring(16,18));//体力（８進数対策）
+		var kouka=(eval(ownerpow[pigsel].substring(18,20))+50)/100;
+		if(tai<70) kouka=kouka*(tai/100);
+		if(eval(ownerpow[pigsel].substring(20,22))>11)//老化度120以上で影響
+			kouka=kouka*(100-Math.max(eval(ownerpow[pigsel].substring(21,23))-20,0)/100);
+		//特訓回数の考慮
+		if(n<31) tokkunnum[pigsel]++;
+		if(tokkunnum[pigsel]>3) kouka=kouka*(1-tokkunnum[pigsel]/10);
+		
+		//やる気効果　体力減に影響
+		var ykouka=9-Math.floor(eval(ownerpow[pigsel].substring(18,20))/10);
+		//能力UP
+		var abilityup=new Array(12);
+		for(i=0;i<12;i++) abilityup[i]=0;
+		switch(n){
+			case 6://単ダ
+				abilityup[1]=Math.floor(3*kouka);
+				abilityup[7]=-10-ykouka;
+				break;
+			case 7://単芝
+				abilityup[0]=Math.floor(3*kouka);
+				abilityup[7]=-10-ykouka;
+				break;
+			case 8://単石
+				abilityup[0]=Math.floor(3*kouka);
+				abilityup[1]=Math.floor(2*kouka);
+				abilityup[7]=-10-ykouka;
+				break;
+			case 9://単泥
+				abilityup[0]=Math.floor(2*kouka);
+				abilityup[6]=Math.floor(3*kouka);
+				abilityup[7]=-10-ykouka;
+				break;
+			case 10://単ウ
+				abilityup[1]=Math.floor(5*kouka);
+				abilityup[7]=-7-ykouka;
+				break;
+			case 11://単坂
+				abilityup[1]=Math.floor(4*kouka);
+				abilityup[2]=Math.floor(3*kouka);
+				abilityup[7]=-12-ykouka;
+				break;
+			case 12://併芝
+				abilityup[0]=Math.floor(3*kouka);
+				abilityup[4]=Math.floor(8*kouka);
+				abilityup[7]=-12-ykouka;
+				break;
+			case 13://併ダ
+				abilityup[1]=Math.floor(3*kouka);
+				abilityup[4]=Math.floor(8*kouka);
+				abilityup[7]=-12-ykouka;
+				break;
+			case 14://併坂
+				abilityup[1]=Math.floor(4*kouka);
+				abilityup[2]=Math.floor(3*kouka);
+				abilityup[4]=Math.floor(4*kouka);
+				abilityup[7]=-16-ykouka;
+				abilityup[9]=1;
+				break;
+			case 15://ゲート
+				abilityup[2]=Math.floor(5*kouka);
+				abilityup[7]=-10-ykouka;
+				break;
+			case 16://精神
+				abilityup[3]=-1*Math.floor(5*kouka);
+				abilityup[7]=-12-ykouka;
+				abilityup[8]=5;
+				abilityup[10]=2;
+				break;
+			case 17://映像
+				abilityup[3]=-1*Math.floor(6*kouka);
+				abilityup[4]=Math.floor(8*kouka);
+				abilityup[7]=-20-ykouka;
+				abilityup[8]=10;
+				abilityup[10]=2;
+				break;
+			case 18://催眠
+				if(Math.random()<0.5){
+					abilityup[0]=Math.floor(3*kouka);
+					abilityup[1]=Math.floor(3*kouka);
+					abilityup[4]=Math.floor(8*kouka);
+					abilityup[8]=20;
+				}
+				else alert("「残念ながら、催眠は上手くいきませんでした」");
+				abilityup[7]=-20-ykouka;
+				abilityup[9]=1;
+				break;
+			case 19://青竹
+				abilityup[3]=-1*Math.floor(5*kouka);
+				abilityup[7]=10;
+				abilityup[8]=10;
+				abilityup[10]=2;
+				break;
+			case 20://水泳
+				abilityup[1]=Math.floor(8*kouka);
+				abilityup[6]=Math.floor(5*kouka);
+				abilityup[7]=-20-ykouka;
+				abilityup[9]=1;
+				break;
+			case 21://タイヤ
+				abilityup[1]=Math.floor(13*kouka);
+				abilityup[7]=-20-ykouka;
+				abilityup[9]=1;
+				break;
+			case 22://パン
+				abilityup[4]=Math.floor(14*kouka);
+				abilityup[5]=Math.floor(6*kouka);
+				abilityup[7]=5;
+				abilityup[9]=1;
+				break;
+			case 23://ハードル
+				abilityup[0]=Math.floor(4*kouka);
+				abilityup[5]=Math.floor(9*kouka);
+				abilityup[7]=-20-ykouka;
+				abilityup[9]=1;
+				break;
+			case 24://トランポリン
+				abilityup[2]=Math.floor(6*kouka);
+				abilityup[5]=Math.floor(14*kouka);
+				abilityup[7]=-30-ykouka;
+				abilityup[9]=2;
+				break;
+			case 25://どろんこ
+				abilityup[0]=Math.floor(7*kouka);
+				abilityup[2]=Math.floor(5*kouka);
+				abilityup[6]=Math.floor(8*kouka);
+				abilityup[7]=-30-ykouka;
+				abilityup[9]=2;
+				break;
+			case 26://マシーン
+				abilityup[0]=Math.floor(15*kouka);
+				abilityup[2]=Math.floor(10*kouka);
+				abilityup[7]=-30-ykouka;
+				abilityup[9]=2;
+				break;
+			case 27://旗
+				abilityup[0]=Math.floor(8*kouka);
+				abilityup[1]=Math.floor(7*kouka);
+				abilityup[2]=Math.floor(10*kouka);
+				abilityup[4]=Math.floor(10*kouka);
+				abilityup[7]=-30-ykouka;
+				abilityup[9]=2;
+				break;
+			case 28://実演
+				if(Math.random()<0.1){
+					abilityup[0]=Math.floor(10*kouka);
+					abilityup[2]=Math.floor(5*kouka);
+					abilityup[4]=Math.floor(10*kouka);
+					abilityup[5]=Math.floor(10*kouka);
+				}
+				else alert("「豚が怯えています。かえって逆効果です」");
+				abilityup[7]=-50-ykouka;
+				abilityup[8]=-50;
+				abilityup[9]=5;
+				abilityup[10]=-2;
+				break;
+			case 29://乗豚
+				abilityup[0]=Math.floor(3*kouka);
+				abilityup[7]=-30-ykouka;
+				abilityup[9]=3;
+				break;
+			case 30://スタント
+				abilityup[1]=Math.floor(2*kouka);
+				abilityup[2]=Math.floor(3*kouka);
+				abilityup[5]=Math.floor(2*kouka);
+				abilityup[7]=-50-ykouka;
+				abilityup[9]=4;
+				break;
+			case 31://干草
+				abilityup[7]=20;break;
+			case 32://飼料
+				abilityup[7]=5;abilityup[8]=15;break;
+			case 33://団子
+				abilityup[0]=2;abilityup[7]=20;break;
+			case 34://ケーキ
+				abilityup[1]=2;abilityup[7]=20;break;
+			case 35://チップス
+				abilityup[2]=2;abilityup[7]=10;abilityup[8]=10;break;
+			case 36://煎餅
+				abilityup[3]=-2;abilityup[8]=20;break;
+			case 37://氷
+				abilityup[4]=4;abilityup[8]=20;break;
+			case 38://焼芋
+				abilityup[5]=2;abilityup[7]=20;break;
+			case 39://砂糖
+				if(Math.random()<0.9){
+					abilityup[7]=40;abilityup[8]=15;
+				}
+				else alert("「あまり食べたくないようです」");
+				break;
+			case 40://ドリンク
+				if(Math.random()<0.9){
+					abilityup[7]=25;abilityup[8]=30;
+				}
+				else alert("「飲む気が無いようです」");
+				break;
+			case 41://プロテイン
+				if(Math.random()<0.5){
+					abilityup[0]=2;abilityup[1]=4;abilityup[7]=40;abilityup[8]=30;
+				}
+				else alert("「興味を示してくれませんでした」");
+				break;
+			case 42://酒
+				abilityup[7]=20;abilityup[8]=40;
+				if(Math.random()<0.5){
+					abilityup[3]=-4;
+					alert("「すぐに寝てしまったようです」");
+				}
+				else{
+					abilityup[3]=4;
+					alert("「酔っ払って気性が荒くなりました」");
+				}
+				break;
+			case 43://ニシン
+				if(Math.random()<0.2){
+					abilityup[0]=4;abilityup[2]=3;abilityup[4]=6;abilityup[5]=4;
+					abilityup[7]=30;abilityup[8]=30;
+				}
+				else{
+					alert("「ふたを開けただけで逃げてしまいました」");
+					abilityup[8]=-30;
+				}
+				abilityup[10]=-1;
+				break;
+			case 44://サソリ
+				if(Math.random()<0.2){
+					abilityup[1]=3;abilityup[3]=-2;abilityup[6]=3;
+					abilityup[7]=50;abilityup[8]=50;
+				}
+				else{
+					alert("「口に入れた瞬間トイレに駆け込んでしまいました」");
+					abilityup[8]=-30;
+				}
+				abilityup[10]=-1;
+				break;
+			case 45://焼豚
+				if(Math.random()<0.1){
+					abilityup[0]=4;abilityup[1]=3;abilityup[2]=3;abilityup[4]=8;
+					abilityup[5]=3;abilityup[7]=20;
+				}
+				else alert("「怒ってどこかに行ってしまいました」")
+				abilityup[10]=-2;
+				break;
+			case 46://放牧
+				//3回休み
+				abilityup[7]=20;abilityup[8]=10;
+				break;
+			case 47://銭湯
+				abilityup[1]=1;abilityup[7]=30;abilityup[8]=20;
+				abilityup[9]=-1;abilityup[10]=1;
+				break;
+			case 48://温泉
+				abilityup[3]=-2;abilityup[4]=2;abilityup[7]=30;abilityup[8]=40;
+				abilityup[9]=-2;abilityup[10]=2;
+				break;
+			case 49://マッサージ
+				abilityup[0]=1;abilityup[1]=2;abilityup[7]=40;abilityup[8]=30;
+				abilityup[9]=-2;abilityup[10]=2;
+				break;
+			case 50://ドック
+				abilityup[3]=-3;abilityup[6]=2;abilityup[7]=40;abilityup[8]=60;
+				abilityup[9]=-3;abilityup[10]=4;
+				break;
+			case 51://旅行
+				abilityup[1]=3;abilityup[3]=-4;abilityup[4]=4;abilityup[6]=3;
+				abilityup[7]=40;abilityup[8]=90;
+				abilityup[9]=-3;abilityup[10]=6;
+				break;
+			case 52://仮面
+				if(ownerpow[pigsel].charAt(26)=="0"){
+					abilityup[3]=-15;
+					ownerpow[pigsel]=ownerpow[pigsel].substring(0,26)+"1"+ownerpow[pigsel].charAt(27);
+				}
+				else{
+					alert("「すでに顔の装備をしています。付け替える事はできません」");
+					mymoney+=300;
+				}
+				break;
+			case 53://魚眼
+				if(ownerpow[pigsel].charAt(26)=="0"){
+					abilityup[3]=15;
+					ownerpow[pigsel]=ownerpow[pigsel].substring(0,26)+"2"+ownerpow[pigsel].charAt(27);
+				}
+				else{
+					alert("「すでに顔の装備をしています。付け替える事はできません」");
+					mymoney+=300;
+				}
+				break;
+			case 54://サングラス
+				if(ownerpow[pigsel].charAt(26)=="0"){
+					abilityup[4]=40;
+					ownerpow[pigsel]=ownerpow[pigsel].substring(0,26)+"3"+ownerpow[pigsel].charAt(27);
+				}
+				else{
+					alert("「すでに顔の装備をしています。付け替える事はできません」");
+					mymoney+=400;
+				}
+				break;
+			case 55://蹄鉄
+				if(ownerpow[pigsel].charAt(27)=="0"){
+					abilityup[0]=13;abilityup[5]=7;
+					ownerpow[pigsel]=ownerpow[pigsel].substring(0,27)+"1";
+				}
+				else{
+					alert("「すでに足の装備をしています。付け替える事はできません」");
+					mymoney+=400;
+				}
+				break;
+			case 56://長靴
+				if(ownerpow[pigsel].charAt(27)=="0"){
+					abilityup[0]=7;abilityup[6]=13;
+					ownerpow[pigsel]=ownerpow[pigsel].substring(0,27)+"2";
+				}
+				else{
+					alert("「すでに足の装備をしています。付け替える事はできません」");
+					mymoney+=400;
+				}
+				break;
+			case 57://スニーカー
+				if(ownerpow[pigsel].charAt(27)=="0"){
+					abilityup[0]=16;abilityup[5]=20;abilityup[6]=14;abilityup[8]=90;
+					ownerpow[pigsel]=ownerpow[pigsel].substring(0,27)+"3";
+				}
+				else{
+					alert("「すでに足の装備をしています。付け替える事はできません」");
+					mymoney+=1000;
+				}
+				break;
+			case 59://極秘
+				for(i=0;i<7;i++){
+					if(i==4) abilityup[i]=Math.floor(14*kouka);
+					else{
+						if(i==3) abilityup[i]=Math.floor(-7*kouka);
+						else abilityup[i]=Math.floor(7*kouka);
+					}
+				}
+				abilityup[7]=-30-ykouka;
+				abilityup[9]=3;
+				break;
+			default:break;
+		}
+		//加算
+		ownerpowup(pigsel,abilityup[0],abilityup[1],abilityup[2],abilityup[3],abilityup[4],abilityup[5],abilityup[6],abilityup[7],abilityup[8],abilityup[9],abilityup[10],abilityup[11]);
+		//コマンド効果表示
+		var pigstatus=new Array("速度","持久","瞬発","気性","競合","跳躍","荒天","体力","やる気");
+		msg="";
+		if(n>=46 && n<=51){
+			ownerwin[pigsel]=ownerwin[pigsel].substring(0,12)+"3";
+			msg+="「療養に入ります。以後２週間は指示を与える事ができません」\n";
+			//療養上限99
+			if(ownerpow[pigsel].charAt(15)=="1")
+				ownerpow[pigsel]=ownerpow[pigsel].substring(0,15)+"099"+ownerpow[pigsel].substring(18,ownerpow[pigsel].length);
+		}
+		if(kouka<0.8 && n<31) msg+="「疲れているようです。あまり効果が出ませんでした」\n";
+		if(ykouka>5 && n<31) msg+="「やる気が足りません。いつもより体力が落ちてます」\n";
+		msg+=ownerpig[pigsel]+" "+farmmenu[n]+"の結果\n";
+		for(i=0;i<9;i++){
+			msg+=pigstatus[i]+"：";
+			if(i==4) abilityup[i]=Math.floor(abilityup[i]/2);//競は半分表示
+			if((abilityup[i]>0 && i!=3) ||(abilityup[i]<0 && i==3)){
+				if(i>6) msg+=Math.abs(abilityup[i])+"UP";
+				else{
+					for(j=0;j<Math.min(10,Math.abs(abilityup[i]));j++) msg+="+";
+				}
+			}
+			else{
+				if(i>6 && abilityup[i]<0) msg+=Math.abs(abilityup[i])+"DOWN";
+				else{
+					for(j=0;j<Math.min(10,Math.abs(abilityup[i]));j++) msg+="-";
+				}
+			}
+			msg+="\n";
+		}
+		alert(msg);
+		
+		totalyouiku=0;
+		for(i=0;i<12;i++) totalyouiku+=youiku[i];
+		
+		//イベントフラグ設定 イベント発動時にeventflag[i]=trueにする
+		if(farmevent==0){//上から発生しやすい順
+			alleventtrue=0;
+			for(i=6;i<58;i++){
+				if(eventflag[i]==false) alleventtrue++;
+			}
+			if(alleventtrue>47 && !eventflag[59]) farmevent=1002;
+			if(totalyouiku>=200 && !eventflag[8]) farmevent=8;
+			if(totalyouiku>=400 && !eventflag[9]) farmevent=9;
+			if(totalyouiku>=800 && !eventflag[24]) farmevent=24;
+			if(totalyouiku>=1500 && !eventflag[25]) farmevent=25;
+			if(totalyouiku>=2500 && !eventflag[26]) farmevent=26;
+			if(totalyouiku>=4000 && !eventflag[27]) farmevent=27;
+			if(n==29 && !eventflag[30]) farmevent=30;
+			if(n==43 && !eventflag[44]) farmevent=44;
+			if(n==45 && !eventflag[28]) farmevent=28;
+			
+			if(mymoney>=1000 && !eventflag[52]) farmevent=52;
+			if(mymoney>=2000 && !eventflag[53]) farmevent=53;
+			if(mymoney>=3000 && !eventflag[54]) farmevent=54;
+			if(mymoney>=4000 && !eventflag[56]) farmevent=56;
+			if(mymoney>=6000 && !eventflag[57]) farmevent=57;
+		}
+		
+		parent.track.selectpig(pigsel);
+		output_status();
+	  }
+	  else alert("そのコマンドは現役豚専用です");
+	 }
+	 else alert("所持金が足りません");
+	}
+	else alert("そこには豚はいません。\n上で豚を選択してください。");
+}
+
+function entry(n){//n:レース番号
+	//グレードチェック
+	pigsel=parent.track.selectn;
+	if(ownertype[pigsel]>2 && eval(ownerwin[pigsel].substring(12,13))==0 && butaname[100+pigsel]==999){
+		var earnmoney=eval(ownerwin[pigsel].substring(0,2))*10000+eval(ownerwin[pigsel].substring(2,4))*100+eval(ownerwin[pigsel].substring(4,6));
+		
+		if((earnmoney>=1000 && r_grade[n]<=5)||(earnmoney<1000 && earnmoney>=400 && r_grade[n]==6)||(earnmoney<400 && r_grade[n]==7)){//エントリー
+			butaname[100+pigsel]=n;
+			parent.track.selectpig(pigsel);
+			alert(ownerpig[pigsel]+"を、"+r_name[n]+"にエントリーしました。\nレースを終えるまでこの豚に指示を与える事はできません。");
+		}
+		else alert("その豚はグレードが異なるため出走できません。");
+	}
+	else{
+		alert("そこには豚はいません。\n上で豚を選択してください。");
+	}
+}
+
+gameini();//初期化
+
+</script>
+<style type="text/css">
+<!--
+.default { position:absolute;
+          visibility:visible;
+          font-family:Osaka,Arial;
+          color:#000000;
+          left:10px;
+          top:98px;}
+#status {top:10px;}
+#menubutton {top:10px;left:220px;}
+#bt_race {top:-90px;}
+#bt_farm {top:-90px;}
+#racebutton {top:-90px;}
+#info    {z-index:9;
+          height:600px;
+          top:80px}
+<!---->
+</style>
+</HEAD>
+<body bgcolor="#8FBC8F" onLoad="loadfn();">
+
+<div class="default" id="status">
+<table border=0 height=40><tr><td bgcolor="#ADD8E6">　　1年目 1月 1週　　</td><td bgcolor="#FFB6C1">　　500 pts　　</td></tr></table></div>
+
+<div class="default" id="menubutton">
+<table border=0><tr><td rowspan=2 valign=middle>　<a href=JavaScript:gomenu("race");><img src="track.gif" alt="競豚場メニュー" border=0></a>　<a href=JavaScript:gomenu("farm");><img src="farm.gif" alt="牧場へ行く" border=0></a>　<a href=JavaScript:savedata(true);><img src="save.gif" alt="セーブして終了" border=0></a></td><td rowspan=2 valign=middle>　Ranking→</td><td bgcolor="#ADD8E6">　<a href="http://game.gr.jp/GameWeb/GameCenter/GRS1027348456/GRS1027348456.cgi" target="_blank"><font size=-1>持ち点</font></a>　</td></tr><tr><td bgcolor="#FFB6C1">　<a href="http://game.gr.jp/GameWeb/GameCenter/GRS1027423818/GRS1027423818.cgi" target="blank"><font size=-1>豚主　</font></a>　</td></tr></table>
+</div>
+
+<div class="default" id="racebutton">
+<table border=0><tr><td rowspan=4><a href="JavaScript:trackmenu(0,false)"><img src="tab_news.gif" border=0 alt="出走する豚に関する情報"></a><br><a href="JavaScript:trackmenu(13,false)"><img src="tab_odds.gif" border=0 alt="全豚券のオッズ"></a></td><td bgcolor=white width=50 rowspan=4><img src="ana.gif"></td></tr></table>
+</div>
+
+<div class="default" id="bt_race"><nobr><img src="track.gif" alt="競豚場メニュー" border=0>　<a href="JavaScript:gorace();"><img src="tab_race.gif" alt="レース開始！　豚が走ります" border=0></a><a href="JavaScript:trackmenu(0,false)"><img src="tab_news.gif" alt="出走する豚に関する情報" border=0></a><a href="JavaScript:trackmenu(1,false)"><img src="tab_win.gif" alt="単勝（１着予想）・複勝（３着以内予想）" border=0></a><a href="JavaScript:trackmenu(2,false)"><img src="tab_bq.gif" alt="枠連（ゼッケンの色で１・２着予想）" border=0></a><a href="JavaScript:trackmenu(3,false)"><img src="tab_qui.gif" alt="豚連（ゼッケンの番号で１・２着予想）" border=0></a><a href="JavaScript:trackmenu(4,false)"><img src="tab_wide.gif" alt="ワイド（1.2 1.3 2.3着予想）" border=0></a><a href="JavaScript:trackmenu(5,false)"><img src="tab_sche.gif" alt="過去の結果と今後のスケジュール" border=0></a></nobr></div>
+
+<div class="default" id="bt_farm"><nobr><img src="farm.gif" alt="牧場メニュー" border=0>　<a href="JavaScript:trackmenu(6,false)"><img src="tab_entry.gif" alt="豚をレースに出すための登録" border=0></a><a href="JavaScript:trackmenu(7,false)"><img src="tab_prod.gif" alt="豚の購入、作成、引退" border=0></a><a href="JavaScript:trackmenu(8,false)"><img src="tab_tra.gif" alt="豚に特訓" border=0></a><a href="JavaScript:trackmenu(9,false)"><img src="tab_snack.gif" alt="おやつ" border=0></a><a href="JavaScript:trackmenu(10,false)"><img src="tab_recu.gif" alt="豚を休ませる" border=0></a><a href="JavaScript:trackmenu(11,false)"><img src="tab_equip.gif" alt="豚の装備" border=0></a><a href="JavaScript:trackmenu(12,false)"><img src="tab_abil.gif" alt="持ち豚の能力一覧" border=0></a></nobr></div>
+
+<div class="default" id="info"><table border=0>
+<table border=0 width=630><tr><td bgcolor=cccccc><p align=center><img src="logo.gif" alt="トントンレース３"></p>
+<p align=center>対応ブラウザ：IE5.x 以上</p>
+<table border align=center>
+<tr><th bgcolor=lightgreen>トントンレース２（前作）<br>未経験の方</td><td>まずは<a href="help/index.html" target="help">こちら</a>をお読みください。</td></tr>
+<tr><th bgcolor=lightpink>はじめから遊ぶ方</th><td>上の「競豚場」または「牧場」をクリックしてください。<br>その下にメニューが表示されます。</th></tr>
+<tr><th bgcolor=lightblue>続きから遊ぶ方（ロード）</th><td><a href="JavaScript:loaddata();">ここをクリックしてください。</a><br>前回セーブした所から始まります。</td></tr>
+<tr><th bgcolor=gold>セーブデータを消したい方</th><td>ゲームをはじめから行い、<br>セーブすると前のセーブデータは上書きで消されます。</td></tr>
+</table>
+<p align=center>分からないことがあれば、各画面右上の<img src="button_help.gif" alt="help">をクリックしてください。<br>別画面でヘルプが表示されます。</p>
+<p align=center></p>
+</td></tr></table>
+</div>
+
+</body>
+</HTML>
